@@ -56,6 +56,7 @@ The header block in each file contains some basic information like a version and
 5. List every pattern document. Leave out `README.md`, `BACKLOG.md` and `INDEX.md` itself.
 6. Legacy folder gets excluded from the `INDEX.md` as well.
 7. Paths are relative to the vault root: no leading `/`, no `..`.
+8. Start the description with `[cross-cutting]` when the document holds rules every decision answers to, whatever its topic: who approves what, naming, where files go. pp-core's Discovery Sprint reads every cross-cutting document in every session, on top of the documents it picks by topic, so keep the mark to short documents whose rules a session could break without any of its topics naming them.
 
 The closing clause (`used when planning …`) is written from the planner's point of view: it says in which kind of work the document should be read, judged from the document's content. A coding-standards document says it applies when planning or writing code; a security document names the security-sensitive work it covers. Do not give a document a clause its content does not support.
 

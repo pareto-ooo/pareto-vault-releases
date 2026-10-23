@@ -29,7 +29,7 @@ These principles are the catch-all rules. Every specific rule in this document, 
 - **No security off in lower environments.** The code path that runs in production is the one that runs everywhere. Security is never disabled "for development" or "for the migration step".
 - **Keep it current.** Dependencies, base images and tools are attack surface. Known vulnerabilities are fixed on a schedule, not when convenient.
 - **Think before building.** New trust boundaries, data flows or exposure are threat-modelled before the code is written.
-- **No unapproved deviation.** Adopting any additions or deviations from the outlined rules needs consultation with the information security officer and the approval of the IT director, and additionally the enterprise architect if architectural change is involved. These are roles, not people: each project records who holds each role in its project definition before its first deviation. One person may hold several roles when the organisation has no separate holder, and the record says so.
+- **No unapproved deviation.** Adopting any additions or deviations from the outlined rules needs approval before the work that depends on it is merged.
 
 ## Authentication
 
