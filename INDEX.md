@@ -3,39 +3,39 @@
 - `architecture/default-stack.md` — default stack for custom-built applications: Vue on @pareto4/ui-vue, C#/.NET, App Service, hosted services, Azure SQL or Cosmos DB, Service Bus, central and Exchange mail, Application Insights with OpenTelemetry, and which deviations block; used when starting or analysing any application project
 - `architecture/deviations.md` — how to deviate from a principle or standard: record it, architect sign-off, easy-to-reverse deviations continue, hard-to-reverse ones block only the affected work; used whenever a choice goes against the vault
 - `architecture/integration.md` — in-house integration rules: source of truth, API Management exposure, sync or async, decoupling, business keys, failures, monitoring, documentation; used when planning any integration between systems
-- `architecture/principles.md` — Pareto enterprise architecture principles: DYA, PACE application layers, business, information and technical principles, architecture models; used when starting a project or making any design or technology decision
+- `architecture/principles.md` — generic enterprise architecture principles: PACE application layers, business, information and technical principles, architecture models; used when starting a project or making any design or technology decision
 - `architecture/saas.md` — selecting and implementing bought SaaS applications: SaaS before PaaS before IaaS, selection, Entra ID sign-on, data ownership, central customer mail, SLA and compliance; used when the reuse-buy-build choice leads to buying an application
 - `architecture/technology-choices.md` — choosing services and technologies: reuse before buy before build, Microsoft first, managed over self-hosted, selection criteria, LTS and versions; used when planning which services a workload is built on
 
 ## business
-- `business/company.md` — Pareto company profile, mission, vision, ambition, core values, strategic goals and tactical objectives (draft, mostly TODO); used when judging where a project proposal fits and what it improves to align with company values
+- `business/company.md` — Pareto company profile, mission, vision, values, strategic goals and objectives; only for internal Pareto projects, ignored for client projects; used when judging where an internal project proposal fits
 
 ## code-standards
 - `code-standards/coding-standards-all-languages.md` — ground-truth principles for all code: philosophy, change discipline, layered architecture, naming, comments, code smells, errors and testing; used when planning or writing code in any language
 - `code-standards/coding-standards-csharp.md` — Backend coding standards: C#/.NET specifics: stack, file layout, async, DI, logging, mappers, time and money, EF Core entities, repositories and migrations; used when planning or writing C# code or EF Core data access
 - `code-standards/coding-standards-sql.md` — SQL specifics: uppercase keywords, PascalCase aliases, explicit columns, left-aligned layout with leading commas, joins, grouping without DISTINCT or UNION, CASE, CTEs over subqueries; used when writing or reviewing any SQL query, view or notebook
-- `code-standards/coding-standards-vuejs.md` — Frontend coding standards: Vue 3 + TypeScript specifics: script setup, @pareto4/ui-vue, state management (local state first, Pinia only for shared state), routing, API access, reference examples and definition of done; used when planning or writing any Vue or TypeScript frontend code
+- `code-standards/coding-standards-vuejs.md` — Vue 3 + TypeScript: script setup, @pareto4/ui-vue, local state before Pinia, routing, screen patterns, API access, definition of done; used when planning or writing Vue or TypeScript frontend code
 - `code-standards/source-control.md` — Conventional Commits, branch naming, pull request and squash-merge rules, SemVer releases as tags on main; used when planning commits, branches, pull requests or a version bump
 
 ## infrastructure
-- `infrastructure/api.md` — HTTP API rules: declared auth per operation, controllers and DTOs, routes and versioning, problem+json errors, paging, idempotency, rate limits, OpenAPI; used when planning or reviewing HTTP endpoints
+- `infrastructure/api.md` — HTTP API rules: auth per operation, DTOs, routes and versioning, enum names, problem+json errors, paging, idempotency, rate limits, operator endpoints, OpenAPI; used when planning or reviewing HTTP endpoints
 - `infrastructure/containers.md` — placeholder container security rules: multi-stage, minimal pinned base, non-root, scanned and commit-tagged images; used when planning Dockerfiles or container build and deploy changes
 - `infrastructure/database.md` — draft language-neutral database rules: one database per app, GUIDv7 ids, audit columns, concurrency, enums, indexes, migrations, Cosmos DB; used when planning schema, persistence or migration work
 - `infrastructure/governance.md` — Cloud Governance Policy as infrastructure rules: tenants and subscriptions, tags, identity, network, data protection, logging, backup, cost; used when planning any Azure resource or landing-zone change
 - `infrastructure/inter-service-communication.md` — choosing HTTP vs Service Bus between apps: no call by default, queries vs facts, caller timeouts and fallback, ID-only versioned events, RBAC on topics; used when planning a cross-app call or event
 - `infrastructure/naming.md` — Azure resource naming convention: components, formats per resource type, security groups, restricted names, stable names; used when planning new Azure resources to decide how each is named
-- `infrastructure/sizing.md` — sizing and cost rules: workload profile, environment profiles, choosing a tier, cost estimate, performance test, review after go-live; used when choosing service tiers or estimating Azure costs per environment
+- `infrastructure/sizing.md` — sizing and cost rules: workload profile, environment profiles, tiers, cold starts, cost estimate, performance test, post-go-live review; used when choosing service tiers or estimating Azure costs per environment
 - `infrastructure/terraform.md` — Terraform and Terragrunt rules: folder structure, units, configuration levels, modules, remote state, deletion protection, versions, applying; used when planning or writing infrastructure code
 
 ## pipeline
 - `pipeline/azure-devops.md` — Azure DevOps pipeline rules: folder layout, stages, jobs, steps, scripts, variables, environments, migrations and security; used when planning or writing pipeline YAML, templates or scripts
-- `pipeline/github-actions.md` — GitHub Actions pipeline rules: .github/ and pipeline/ layout, entry points, reusable workflows, composite actions, scripts, OIDC and permissions, environments, migrations and security; used when planning or writing GitHub Actions workflows, actions or scripts
-- `pipeline/quality-gates.md` — merge-blocking PR gates: build and tests, SonarCloud quality gate and coverage, GHAS and Trivy security gate, severity thresholds, hotfix exceptions; used when deciding which pipeline checks must pass before merge
+- `pipeline/github-actions.md` — GitHub Actions rules: layout, entry points, reusable workflows, scripts, OIDC and permissions, environment branches or tag promotion, migrations, security; used when planning or writing GitHub Actions workflows
+- `pipeline/quality-gates.md` — merge-blocking PR gates: build and tests, SonarCloud, GHAS and Trivy, substitutes without them, ZAP, thresholds, hotfix exceptions; used when deciding which pipeline checks must pass before merge
 - `pipeline/release.md` — release stages and gates: one stage per approval, state checks before non-repeatable steps like slot swaps, performance test before critical go-lives; used when planning deploy, approval or release-strategy changes
 
 ## security
-- `security/compliance.md` — GDPR, ISO 27001, Microsoft-first policy, Azure governance, packages, audit trail, threat modelling with STRIDE, evidence; used when planning personal data, new dependencies, new trust boundaries or exposure, or audit evidence
-- `security/security.md` — security principles and rules for authentication, authorization, TLS, secrets, cryptography, Azure, input handling, logging and supply chain; used when planning any security-sensitive work or a review
+- `security/compliance.md` — GDPR, ISO 27001, Microsoft first, regions, backups, classification levels, one-person teams, audit trail, threat models, evidence; used when planning personal data, dependencies, trust boundaries, backups or audits
+- `security/security.md` — security principles and rules for authentication, authorization and role recovery, TLS, secrets, cryptography, Azure, input handling, logging and supply chain; used when planning any security-sensitive work or a review
 
 ## root
 - `local-development.md` — local development in containers: Docker Desktop, a dev container per repository, the .NET SDK exception, emulated backing services, Aspire AppHost for C# and Compose otherwise, one start command, the developer's own Entra login, seed data; used when setting up or changing how a project runs on a laptop

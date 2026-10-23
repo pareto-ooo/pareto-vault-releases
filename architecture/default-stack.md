@@ -52,7 +52,7 @@ The technologies every custom-built application starts from: its frontend, backe
 
 ## Mail
 
-- **Mail to customers goes through the central mail delivery service,** over SMTP or its API. It is the one trusted, allow-listed sender for our domain. **TODO:** name the mail delivery service.
+- **Mail to customers goes through the organisation's central mail delivery service,** over SMTP or its API. It is the one trusted, allow-listed sender for the organisation's domain. Which service that is differs per organisation, so the project definition names it.
 - **Internal mail goes through Microsoft Exchange,** with a service account per application.
 - **Another mail provider in a deployed environment is a blocking deviation.** It changes who can send mail in our name.
 

@@ -398,7 +398,7 @@ export function useDebouncedText(source: MaybeRefOrGetter<string>, delayMs: numb
 - **The `Ui` prefix belongs to the design system.** An app component never uses it, so `UiCard` always means the kit's.
 - **Components are imported where they are used.** App components are never registered globally.
 - **Use the design system.** Where `@pareto4/ui-vue` has a component, the app uses it. No hand-written buttons, inputs, tables or dialogs, no copied kit source, and no second component library.
-- **Read the kit's API, never guess it.** Before using a kit component, read its props, events and slots from the package's type declarations. A prop name or value that is not in the types does not exist. TODO(team): link to the kit's documentation or Storybook.
+- **Read the kit's API, never guess it.** Before using a kit component, read its props, events and slots from the package's type declarations. A prop name or value that is not in the types does not exist. The package ships its own documentation: `COMPONENTS.md` (each component's purpose, props, slots and an example), `README.md`, and `ai/components.json` for tools. When they differ from the type declarations, the types win.
 - **Presentational by default.** Props in, events out. Only routed screen components read stores, call actions and use data-loading composables, and they pass plain props down. A presentational component never imports a store.
 - **Pass the smallest input.** A component that renders a name takes `name: string`, not the whole `Customer`.
 - **Extract a component** when the same shape appears twice, the template has three or more distinct sections, or it passes 100 lines. A render function or a `computed` that returns VNodes is not a component.
@@ -528,12 +528,25 @@ These rules apply once the app uses Pinia.
 - **A catch-all route renders a not-found screen.**
 - **A lazy chunk that fails after a deploy reloads the page once.** A `vite:preloadError` listener in `main.ts` reloads, guarded by a `sessionStorage` flag. When the flag is already set, the error is not suppressed, `router.onError` reports it and the error screen shows, so a chunk that keeps failing never causes a reload loop.
 
+## Screen patterns
+
+The defaults for how screens are laid out and how they talk to the user. A project that needs something else records the decision.
+
+- **Desktop first, never broken on a phone.** The primary target is an office laptop in a current Edge or Chrome. Layouts reflow to one column on narrow screens at Tailwind's default breakpoints, so nothing breaks on a phone. A phone-specific design is a project decision, and so are custom breakpoints.
+- **The app shell is `UiAppShell` with `UiSidebar` as the only main navigation.** Items are grouped with the sidebar's `group` eyebrows, and the signed-in user and sign-out sit in its footer. There is no second navigation bar.
+- **Navigation is at most two levels deep.** A detail screen has a back link to its list, and the list restores its filters from the URL.
+- **No product tour and no help page by default.** Empty states guide first use.
+- **An empty state is one sentence and the one action that resolves it**, shown with `UiEmptyState`: "No customers yet" with New customer, "No customers match these filters" with Clear filters. A list that is empty and a list emptied by its filters are different states with different actions.
+- **Feedback appears where the action happened.** Field and form errors are inline at the field. A conflict or stale data is an inline alert on the screen with the action that resolves it (Reload).
+- **Success is an inline status line** next to the action that caused it, with `role="status"` so it is announced, and it clears on the next action. The kit has no toast; a toast is proposed to `@pareto4/ui-vue`, never hand-written.
+- **A destructive action is confirmed in a kit dialog** (`useDialog().confirm`) that names what will be lost.
+
 ## API access
 
 - **One configured HTTP core** (`src/shared/api/http.ts`, a thin typed wrapper around `fetch`) holds the base URL, timeout, authentication, tracing and retry. Nothing else calls `fetch`. Axios is not used.
 - **The HTTP core rejects only with `ApiRequestError`.** It maps the status code or failure to an `ApiErrorCode` and reads the `traceId` and the problem `code` (into `problemCode`) from the response.
 - **One client module per backend resource** (`customer-api.ts`). It returns typed models, never a `Response` or raw JSON.
-- **Request and response types are hand-written interfaces** in the feature's `<feature>-models.ts`, named after the backend DTO they mirror (`CustomerResponse`, `CreateCustomerRequest`). Required and nullable members follow the backend's OpenAPI document exactly. TODO(team): location of the OpenAPI document.
+- **Request and response types are hand-written interfaces** in the feature's `<feature>-models.ts`, named after the backend DTO they mirror (`CustomerResponse`, `CreateCustomerRequest`). Required and nullable members follow the backend's OpenAPI document exactly. That document is served by the backend at `/v<n>/openapi.json` and exported with its build artifact.
 - **Never guess a DTO member.** When the OpenAPI document is not available, an AI assistant asks instead of inventing fields.
 - **A response is typed in one place.** The HTTP core returns `unknown`. An API client types it with `as <Dto>` directly on the result of an `http` call. This is the only cast allowed in the codebase: it trusts the OpenAPI contract, and there is no runtime validation.
 - **API clients return the response interfaces as they are.** A mapper exists only when a screen needs a different shape. It is a plain function in the feature's `api/` folder.
@@ -598,7 +611,7 @@ The rules below are enforced by lint or the compiler. Every other rule in this d
 
 ## Styling
 
-- **Tailwind utilities with the design system's semantic tokens.** No hard-coded colors, spacing or font sizes. They are magic values. TODO(team): name the file or import that defines the tokens.
+- **Tailwind utilities with the design system's semantic tokens.** No hard-coded colors, spacing or font sizes. They are magic values. The tokens are defined by the kit in `@pareto4/ui-vue/theme.css`.
 - **Tailwind v4 is configured in CSS.** `src/style.css` imports Tailwind and the kit's tokens, and Vite uses `@tailwindcss/vite`. There is no `tailwind.config.js`.
 - **Class names are written out in full.** Tailwind only generates classes it finds in the source, so a class built by concatenation (`` `bg-${tone}` ``) renders unstyled. Map a value to a complete class name instead.
 - **`<style scoped>` only for what utilities cannot express**, with class selectors, not element selectors. Global CSS lives only in `src/style.css`.
@@ -650,7 +663,7 @@ There is no formal WCAG level. These rules are the minimum every screen meets.
 
 ## Definition of done
 
-A change is done when all of these pass without errors or warnings. An AI assistant runs them itself and does not report work as done before they pass. TODO(team): confirm the script names.
+A change is done when all of these pass without errors or warnings. An AI assistant runs them itself and does not report work as done before they pass. Every app's `package.json` has these script names, so the commands are the same in every repository.
 
 1. `npm run lint`
 2. `npm run type-check` (runs `vue-tsc --noEmit`)

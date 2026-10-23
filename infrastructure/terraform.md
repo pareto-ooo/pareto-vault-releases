@@ -145,7 +145,7 @@ Names inside the code follow the Terraform best practices referenced by the Clou
 
 - **Terraform and provider versions are constrained** in the generated version block: a minimum Terraform version and a pessimistic constraint per provider (`~>`).
 - **Lock files belong to the unit.** Each unit commits its `.terraform.lock.hcl`. Lock files under `modules/` are git-ignored.
-- **Lock files hold hashes for every platform that runs Terraform,** at least `linux_amd64` for the pipeline and `windows_amd64` for developers, created with `terraform providers lock`.
+- **Lock files hold hashes for every platform that runs Terraform,** at least `linux_amd64` for the pipeline and `windows_amd64` and `darwin_arm64` for developers, created with `terraform providers lock`.
 - **The pipeline initialises with a read-only lock file** (`-lockfile=readonly`), passed through `TF_CLI_ARGS_init` because Terragrunt runs `init` itself.
 
 ## Authentication

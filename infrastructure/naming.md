@@ -36,7 +36,7 @@ The scope of a resource decides how unique its name must be, and which component
 | `<app>` | Project, application or service the resource is for | One short token per application, the same in every environment |
 | `<scope>` | Use of a shared or multi-purpose resource | Only when needed, such as `landing`, `private`, `shared` or `generic` |
 | `<company>` | Company short name | `pareto`; required in globally scoped names, allowed in others |
-| `<region>` | Azure region | `westeurope` by default; only in network resource names |
+| `<region>` | Azure region | `northeurope` by default; only in network resource names |
 | `<env>` | Environment | The environment short name: `dev`, `tst`, `stg`, `acc` or `prd`, or `shared` for a resource that serves several environments |
 | `<###>` | Instance number | Three digits, starting at `001`, only for the types that use it |
 

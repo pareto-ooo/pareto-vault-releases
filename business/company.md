@@ -9,6 +9,8 @@ schemaVersion: 1
 
 Who Pareto is, what it strives for and the values that guide it. This is the ground truth for judging a project proposal: where it fits in the company's direction, what it improves, and whether it is worth pursuing.
 
+**This document applies only to internal Pareto projects.** For a client project it is ignored: the client's own business context takes its place, and a project is never judged against Pareto's goals or values. An open TODO here is not a gap for a client project.
+
 ## Who we are
 
 - **TODO:** describe Pareto: what it does, for whom, since when, and where it operates.

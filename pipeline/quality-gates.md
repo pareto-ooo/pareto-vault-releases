@@ -39,6 +39,21 @@ The checks a change must pass before it is merged.
 - **Trivy runs on every pull request that changes infrastructure code,** using the Trivy extension installed in the Azure DevOps organisation or the Trivy action on GitHub.
 - **The existing backlog is scanned on a schedule.** Dependency and infrastructure scans also run on a schedule against the main branch, because new vulnerabilities are published for code that did not change; findings become work items.
 - **Web applications are scanned periodically** with ZAP against the OWASP rule sets (Cloud Governance GS-10). This runs on a schedule against a deployed environment, not on the pull request.
+- **An application without a deployed environment is scanned against itself in the pipeline.** Until it has one, the scheduled run starts the application stack in the pipeline and runs a ZAP baseline scan against it. Findings are handled like other scheduled findings.
+
+## Without SonarCloud or GitHub Advanced Security
+
+A repository where SonarCloud or GitHub Advanced Security is not available (for example a private repository on a free GitHub plan) uses these substitutes. The substitutes and the reason are recorded in the project definition, and the project moves to the standard tools when they become available.
+
+| Gate | Substitute |
+|------|------------|
+| Coverage | The test run enforces the coding standards' coverage threshold and fails the pipeline below it |
+| Code quality and code scanning | The language's own analyzers and linters at their strictest setting, with warnings as errors (the .NET analyzers, ESLint, `vue-tsc`) |
+| Secrets | gitleaks on every pull request; a finding blocks |
+| Vulnerable dependencies | Trivy filesystem scan of the committed lock files on every pull request, blocking at critical and high, plus Dependabot alerts |
+
+- **The same thresholds apply.** A substitute blocks on what the standard tool would block on, and reports the rest.
+- **What no substitute covers is named.** The record lists what the standard tool would have checked that the substitutes do not (for example SonarCloud's security hotspots and duplication), so the gap is known.
 
 ## Exceptions
 

@@ -27,8 +27,8 @@ A rule that exists because the company works to a regulation, a standard or an i
 
 - **GDPR.** The General Data Protection Regulation, in the Netherlands also the UAVG. Applies to all personal data we process.
 - **ISO/IEC 27001.** Information security management. The company works to this standard.
-- **ISO/IEC 27701.** Privacy information management. **TODO:** confirm.
-- **Sector or customer requirements.** For example NEN 7510 or customer contracts. **TODO:** confirm per customer or project.
+- **ISO/IEC 27701.** Privacy information management. Applies when a customer contract requires it, and the project definition then says so.
+- **Sector or customer requirements.** For example NEN 7510 or customer contracts. Each project records which apply in its project definition, before design starts; none is assumed.
 - **Cloud Governance Policy.** The company's internal policy for Azure, based on the Microsoft Cloud Security Benchmark. Workload teams are responsible for their workloads within its boundaries. The information security officer owns the mandatory security use cases.
 - **Software Governance.** The company's internal Workspace Software Governance rules, which cover tools, extensions, plugins and packages. For development, the package rules apply.
 - **Payment card rules (PCI DSS).** Not in scope: payment data is never handled or logged by our code.
@@ -49,7 +49,7 @@ Rules from the Cloud Governance Policy that only hold on our Azure platform. The
 - **(Cloud Governance) Workload teams own the security of their workloads**, within the boundaries of the company policies and of the shared responsibility model with Microsoft.
 - **(Cloud Governance)(ISO27001) Production and non-production run in separate subscriptions.**
 - **(Cloud Governance) Every Azure resource is tagged** with at least the workload name, the data classification, the business criticality, the business owner (the department) and the workload team. The business criticality sets the recovery time: MissionCritical under 24 hours, BusinessCritical under 48 hours, BusinessSupport under 96 hours, NonCritical under 168 hours.
-- **The default region is West Europe**, which keeps data in the EU. Another region needs a recorded decision.
+- **The default region is North Europe**, which keeps data in the EU. Every Azure region in the EU/EEA is approved, and another approved region needs a recorded reason, such as a service that North Europe does not offer. North Europe was the cheapest EU region for the default stack when this was set (2026-10-23, Azure retail prices for App Service and serverless Azure SQL). A workload uses one region; a second region is used only when the business criticality requires surviving a region loss. An existing workload in another EU region stays there; moving it is a decision of its own.
 
 ## Software governance (packages)
 
@@ -154,7 +154,17 @@ A person can ask for access, rectification, erasure, restriction, portability an
 - **(GDPR) Evidence for legal claims is a narrower ground.** Contracts and documents kept only as evidence may be kept against an erasure request, but only while a claim is plausible and for as long as the documented reason holds. A challenged request goes to the privacy owner before it is refused. (Art. 17(3)(e))
 - **(Dutch law) Financial records, signed contract, and signed documents are kept for minimum 7 full financial years after they stop being current.** This means documents of that type are essentially kept forever. The policy is to have open-ended storage for this type of document and those should never expire or be excluded from backups. We have a legal duty to keep them.
 - **The audit stream is kept at least two years, then purged.** A scheduled job removes older audit entries because of their size. Application logs default to 30 days.
-- **Backups:** TODO define retention and intensity
+- **Backups follow the business criticality, at the lowest cost that meets the recovery objectives.** The platform's default backups are the starting point, and every step up is paid for only when the recovery time and recovery point objectives need it:
+
+  | Business criticality | Point-in-time restore | Backup storage redundancy | Long-term retention |
+  |----------------------|-----------------------|---------------------------|---------------------|
+  | Non-production environments | The minimum the service allows | Locally redundant | None |
+  | `NonCritical`, `BusinessSupport` | 7 days, the Azure SQL default | Locally redundant | None |
+  | `BusinessCritical` | 14 to 35 days, from the recovery point objective | Zone redundant | Only for a legal duty |
+  | `MissionCritical` | 35 days | Geo-redundant, so a region loss is survivable | Only for a legal duty |
+
+- **Backup redundancy is set explicitly.** Azure SQL defaults to geo-redundant backup storage, which costs more than most workloads need, so the redundancy in the table is set in infrastructure code.
+- **Retention that a law requires lives in the data, not in backups.** Records with a legal retention duty are kept in the application's store for their period; long-term backup retention is not used as an archive.
 
 ### Personal data in our own systems
 
@@ -171,7 +181,7 @@ A person can ask for access, rectification, erasure, restriction, portability an
 
 - **(GDPR) A third party that processes personal data for us needs a data processing agreement** before it receives any. This includes SaaS tools, email delivery, monitoring, AI services and subcontractors. (Art. 28)
 - **(GDPR) AI and external services receive personal data only after consent and a signed agreement.** A compliance gate (AI consent and data processing agreement sign-off) exists and is still pending. Until it is complete, no personal data is sent to such a service. *Status: pending.*
-- **(GDPR) Personal data is stored and processed in the EU/EEA.** A transfer outside the EEA needs a valid transfer mechanism and a recorded decision. (Art. 44) **TODO:** confirm the approved regions and sub-processor list.
+- **(GDPR) Personal data is stored and processed in the EU/EEA.** A transfer outside the EEA needs a valid transfer mechanism and a recorded decision. (Art. 44)
 - **(GDPR) The sub-processor list is kept current** and shared with customers where our role requires it.
 
 ### Impact assessments and records
@@ -186,7 +196,7 @@ A person can ask for access, rectification, erasure, restriction, portability an
 - **(GDPR) A confirmed breach with risk to people is notified to the supervisory authority within 72 hours of becoming aware** (in the Netherlands the Autoriteit Persoonsgegevens). If the risk to people is high, the people concerned are informed without undue delay. As a processor, we notify the controller without undue delay, so they can meet their own deadline. (Art. 33, 34)
 - **(GDPR) The incident record states** what happened, which data and people, the likely consequences and the measures taken. Post-incident reports are blameless and hold no personal data.
 - **(GDPR) A secret or personal data found in a log or a repository counts as a potential breach**, and is handled as an incident: removed, rotated or erased, and assessed.
-- **TODO:** Link the breach procedure to the on-call and post-incident process once the owner is named.
+- **The privacy owner runs the breach procedure**, through the incident process, and decides on notification. The project records who holds that role and how to reach the incident contacts (see Incidents and weaknesses).
 
 ## Audit trail
 
@@ -214,6 +224,7 @@ This chapter holds the ISO philosophy and the development-process rules. Rules m
 
 - **(ISO27001) Every change is traceable.** A change to code, infrastructure, pipeline or configuration goes through a reviewed pull request that references a work item. Nothing reaches an environment outside that path.
 - **(ISO27001) Segregation of duties.** The author of a change never approves or merges it alone. Whoever approves a production deployment is independent of the change where the team size allows, and the pipeline enforces it.
+- **(ISO27001) A team of one person is a recorded deviation from segregation of duties.** One person working with an AI assistant cannot have every change approved by someone other than its author. The deviation is recorded and signed off before the first pull request merges, and the deviation record carries these compensating controls: every change gets a code review by the assistant and a review against the vault, both recorded on the pull request; every required check passes before the person merges, and the branch rules require the checks even though they cannot require a second approval; and a production deployment is approved by someone outside the team where such a person exists. The deviation ends when a second person joins the team.
 - **(ISO27001) Emergency changes follow the same path.** An urgent fix is faster, not exempt. It is reviewed afterwards at the latest and its reason recorded.
 - **(ISO27001) Environments stay separated.** Development, acceptance and production have separate identities, secrets, data and approvals, and a change is promoted, never rebuilt, between them.
 - **(ISO27001) Security-relevant changes are flagged.** A change to authentication, authorization, encryption, access rights or logging says so in the pull request and gets a reviewer who checks exactly that.
@@ -228,6 +239,7 @@ This chapter holds the ISO philosophy and the development-process rules. Rules m
 ### Incidents and weaknesses
 
 - **(ISO27001)(Cloud Governance) Every team knows the company incident response plan** and how to reach the incident contacts, because the plan covers the cloud as well and is of no use unknown.
+- **Incident contacts are roles.** The vault never names people. Each project records in its project definition who currently holds the incident contact, privacy owner and security owner roles and how to reach them, and keeps that record current.
 - **(ISO27001) Security events and weaknesses are reported immediately** through the incident process, by whoever notices, whether they caused it or not. A leaked secret, personal data in a log, an unexpected access, a suspicious dependency or a bypassed control all count.
 - **(ISO27001) Evidence is preserved.** Logs and audit records of an incident are not deleted, and the response does not destroy them.
 - **(ISO27001) Every incident ends with a blameless review and a corrective action** that is tracked to completion.
@@ -240,7 +252,14 @@ This chapter holds the ISO philosophy and the development-process rules. Rules m
 
 ### Information handling
 
-- **(ISO27001) Data is classified.** Every data store and data flow in a project is labelled with a classification that decides who may access it, how it is logged, how long it is kept and whether it may leave the environment. The company policy also leaves the classification values open. **TODO:** define the classification levels.
+- **(ISO27001) Data is classified.** Every data store and data flow in a project is labelled with a classification that decides who may access it, how it is logged, how long it is kept and whether it may leave the environment. A data store or flow takes the highest level of any data in it, and that level is also its `DataClassification` tag.
+
+  | Level | What it holds | Who may access it |
+  |-------|---------------|-------------------|
+  | `Public` | Information meant to be published; disclosure causes no harm | Anyone |
+  | `Internal` | Everyday business information without personal data; disclosure causes limited harm | Employees and contracted parties |
+  | `Confidential` | Personal data, customer data and business-sensitive information; disclosure harms people or the company | Named groups with a need to know |
+  | `Restricted` | Special-category and criminal data, payment and financial data, credentials and data under a legal duty of secrecy; disclosure causes severe harm | Named people, each access logged |
 - **(ISO27001) Information is deleted when its retention ends**, by an enforced mechanism, including copies, exports and temporary files (see Retention and erasure).
 - **(ISO27001) Production data stays in production.** It is not copied to lower environments, a workstation, a chat, a ticket or an AI service.
 
@@ -314,5 +333,5 @@ What an auditor or a customer can be shown, and where it comes from.
 ## Review and ownership
 
 - **A change that adds or alters personal data handling is reviewed against this document** as part of the normal security review, and the pull request says which GDPR principle it touches.
-- **Owners:** the vault owners maintain this document. **TODO:** name the privacy owner (data protection officer or equivalent) and the security owner who answer questions and sign off exceptions.
+- **Owners:** the vault owners maintain this document. The privacy owner (the data protection officer or equivalent) and the security owner (the information security officer) answer questions and sign off exceptions. These are roles: each project records who holds them.
 - **A deviation from a rule here needs a recorded decision**, not a vault edit.

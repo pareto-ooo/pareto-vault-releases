@@ -54,7 +54,7 @@ A revert is a `revert` type, with a `Refs:` footer listing the reverted commit h
 - **One PR and branch holds one concern.** Unrelated work gets its own branch, so it can be reviewed and reverted alone. For example documentation, or refactoring changes.
 - **The PR title follows the commit format** (`fix(practices): repair dead globs`). With squash merging, the title becomes the commit message on `main`, so it carries the type and the version effect.
 - **The description says what changed, why, and how it was verified.** It references the work item (`Refs: #12345`) and calls out any breaking change.
-- **(ISO27001) A PR needs a passing pipeline and a review before it merges.** The author does not merge their own unreviewed changes, and cannot approve their own PR.
+- **(ISO27001) A PR needs a passing pipeline and a review before it merges.** The author does not merge their own unreviewed changes, and cannot approve their own PR. A team of one person cannot meet this. It works under a recorded and signed deviation whose compensating controls are a recorded assistant review and vault review on every PR, and required checks that pass before the author merges.
 - **Reviewers check the commit type against the change.** A `fix` that adds behavior, or a missing `!` on a breaking change, is a review finding.
 - **Merge by squash**, keeping `main` one commit per PR, unless the individual commits are each worth keeping.
 - **Delete a branch after it is merged.** By default only your own branches can be deleted, usually this is automatically done through the Dev-Ops PR system with auto-complete enabled.

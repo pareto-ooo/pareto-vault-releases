@@ -29,7 +29,7 @@ These principles are the catch-all rules. Every specific rule in this document, 
 - **No security off in lower environments.** The code path that runs in production is the one that runs everywhere. Security is never disabled "for development" or "for the migration step".
 - **Keep it current.** Dependencies, base images and tools are attack surface. Known vulnerabilities are fixed on a schedule, not when convenient.
 - **Think before building.** New trust boundaries, data flows or exposure are threat-modelled before the code is written.
-- **No Unapproved deviation.** Adopting any additions or deviations from the outlined rules needs consultation with the information security officer and the approval of the IT director, and additionally the Enterprise Architect if architectural change is involved.
+- **No unapproved deviation.** Adopting any additions or deviations from the outlined rules needs consultation with the information security officer and the approval of the IT director, and additionally the enterprise architect if architectural change is involved. These are roles, not people: each project records who holds each role in its project definition before its first deviation. One person may hold several roles when the organisation has no separate holder, and the record says so.
 
 ## Authentication
 
@@ -40,11 +40,12 @@ These principles are the catch-all rules. Every specific rule in this document, 
 - **External applications do not use SSO.** Customers and other external users never sign in through the company identity provider. **TODO:** decide how external users sign in.
 - **(ISO27001) Every request carries a token and the backend validates it**: signature, issuer, audience and expiry. The backend keeps no session state.
 - **Tokens are short-lived.** Access tokens live about one hour at most. A long-lived token needs a recorded reason.
-- **Refresh tokens rotate on every use** and are revoked at the identity provider on logout.
+- **Refresh tokens rotate on every use and end with the session.** On logout the client discards every token it holds and ends the session at the identity provider. Where the identity provider can revoke the refresh token of one application, logout revokes it. Where it can only revoke every session the user has, as for a single-page app on Entra ID, the refresh token is left to expire, and its lifetime is never extended beyond the provider's default for that kind of client (24 hours for a single-page app on Entra ID).
 - **(ISO27001) Every Pareto login is multi-factor, or machine to machine.** Employee logins go through the company identity provider, which enforces two-factor authentication wherever possible. No Pareto account is exempt, and no exclusion or "legacy" sign-in path is left open. Passwordless sign-in is preferred. This does not apply to external users of external applications.
 - **Every account that has or can get access to business-critical or mission-critical workloads uses a hardware security token (a YubiKey).** The accounts that carry one are the dedicated ADC-#### accounts. Any other login mechanism needs two-factor authentication as well, and a recorded decision for why the company identity provider is not used. Non-human callers use machine-to-machine credentials (managed identity, federated or signed tokens), never a person's login.
 - **(ISO27001) Public API keys are a machine-to-machine exception.** An API key is allowed only for a non-human caller that cannot use token-based authentication. It is issued per client, scoped to the minimum, stored hashed, revocable, rotated, rate limited and never used to sign in a person.
 - **Anonymous endpoints are a documented exception.** Each one is explicitly marked as anonymous in code, declared with empty security in the API description, rate limited, strictly validated, and never reads or writes user-specific data. Health checks, marketing pages and sign-up are the usual cases.
+- **Health checks are anonymous by design.** `/health/live` (the process runs) and `/health/ready` (it can serve requests) are marked anonymous so the platform can probe them. They return only a status, never version, configuration or dependency detail, and they are not rate limited, because the platform's probes would trip the limit.
 - **(ISO27001) Authentication is never switched off or made conditional** on environment or startup mode. Its configuration is validated at startup so a missing value fails the boot instead of the first request.
 - **(ISO27001) Service-to-service calls use managed-identity tokens.** Never an end user's token and never a shared API key. The receiver checks the audience and the caller's identity against an explicit allowlist.
 
@@ -55,6 +56,8 @@ These principles are the catch-all rules. Every specific rule in this document, 
 - **(ISO27001)(GDPR) Tenant and ownership isolation is enforced in the data access path**, not left to each caller. In multi-tenant data, every query is filtered by tenant, backed by a second layer (a global query filter, or database row-level security, chosen by sensitivity).
 - **Authorization failures are reported as forbidden** through the standard error handling, without revealing whether the resource exists to a caller who may not know.
 - **Tests cover the forbidden path** as well as the allowed path, for every new authorization check.
+- **A scoped role always has a recovery path.** When the last holder of a role scoped to a team, tenant or other group (a team lead, an owner) is gone, an operator moves the role to another existing member through an audited internal operation, guarded by its own app role. That app role grants no access to the scope's data.
+- **A leaver loses access at the identity provider.** Disabling or removing the account in the company identity provider blocks every sign-in, so security never depends on the application's own clean-up. The application defines, per scoped role, what happens to what the leaver held: their open work is reassigned by whoever manages the scope, and a role that would be left without a holder goes through the recovery path.
 
 ## Transport security (TLS)
 

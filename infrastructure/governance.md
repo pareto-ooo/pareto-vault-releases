@@ -80,9 +80,9 @@ How the Pareto Cloud Governance Policy translates into infrastructure code. Thes
 
 ## DevOps security
 
-- **Infrastructure repositories pass the security gate** in the pipeline quality gates: GitHub Advanced Security for secret and dependency scanning, SonarCloud for code scanning (GS-10, DS-02).
+- **Infrastructure repositories pass the security gate** of the pipeline quality gates, with its secret, dependency and code scanning (GS-10, DS-02).
 - **No secrets in code or pipeline definitions.** Keys and credentials come from Key Vault or the service connection (DS-03).
-- **Audit logging is enabled** on the Azure DevOps organisation and its pipelines (DS-07).
+- **Audit logging is enabled on the DevOps platform**: the Azure DevOps organisation and its pipelines, or the GitHub organisation and its workflows (DS-07).
 
 ## Not covered here
 

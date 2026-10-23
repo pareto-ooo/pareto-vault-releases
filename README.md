@@ -16,6 +16,10 @@ pp-core reads this folder at various moments during discovery, and planning of a
 
 **Pushing to this vault does NOT auto-flow to consumers.** Versions are annotated tags on `main` using SemVer 2.0.0 versioning (`v1.0.0` … `v1.2.1`); each consumer pins a tag in `client.vaultRef` and keeps fetching that tag until someone bumps it. The pin is the governance feature: a consumer moves deliberately, and a phase built against `v1.2.1` can be audited against `v1.2.1` forever.
 
+**Projects read the public copy.** The vault is written and reviewed in the private repo `pareto-ooo/Pareto-Vault`. Every `vX.Y.Z` tag pushed there is published by the `Publish release` workflow to the public, read-only repo [`pareto-ooo/pareto-vault-releases`](https://github.com/pareto-ooo/pareto-vault-releases), under the same tag and without history, `.planning/` or `.github/`. Projects point `client.vaultRepo` at that public repo, so using the vault needs no access to this one. An older tag that a project still pins is published by running the workflow by hand with that tag.
+
+**Everything in a release becomes public.** A publish is blocked when a file matches `.github/scripts/publish-denylist.txt` (client names, e-mail addresses, Azure ids, credentials). That list is a safety net, not a review: never write client facts, internal names or real identifiers into the vault.
+
 ## Adding content
 
 Add a new .MD file following roughly the formatting of the existing documents:

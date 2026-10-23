@@ -56,7 +56,8 @@ pipeline/
 - **One entry point per purpose.** The table shows the common set. A repository may have more entry points, for example a separate CD workflow per deployable with its own release cadence.
   | Entry point | Purpose |
   |-------------|---------|
-  | `cd.yaml` | Build and deploy on a push to an environment branch |
+  | `cd.yaml` | Build and deploy on a push to an environment branch, or on a push to `main` with tag promotion |
+  | `release.yaml` | With tag promotion: build a release tag once and promote that artifact through the later environments |
   | `pull-request.yaml` | Validation of a pull request before merge, or one `<deployable>-pull-request.yaml` per part when validation is split by path |
 - **Entry points orchestrate, they do not implement.** They define triggers, permissions, concurrency and which reusable workflows or jobs run. Multi-line scripts are never inlined in an entry point.
 - **Pull requests build and test at minimum.** Every pull request that changes deployable code builds that code and runs all its tests, and that workflow's checks are required on the target branch.
@@ -122,10 +123,12 @@ Reusable workflows (`on: workflow_call`) take the place of stage and job templat
 
 ## Environments and branches
 
-- **One branch per environment.** A push to an environment branch deploys that environment. The branch names and the number of environments are decided per project.
-- **The branch-to-environment mapping lives in one place**, in the CD entry point's trigger and its `environment` selection, not scattered over jobs and steps.
-- **Environment branches are protected by a ruleset.** They only change through a pull request, never by a direct push.
-- **Production is gated.** The production environment has required reviewers and a deployment branch policy that only admits the production branch.
+- **A project uses one of two promotion patterns**, environment branches or tag promotion, and records which one in its project definition. Both are standard; neither is a deviation.
+- **Environment branches: one branch per environment.** A push to an environment branch deploys that environment. The branch names and the number of environments are decided per project.
+- **Tag promotion: build once, promote the tag.** A push to `main` deploys the first environment. A release tag on `main` (`v1.4.0`) starts one run that builds once and publishes the artifact, and that same artifact is deployed to each later environment in order (`acc`, then `prd`), each in its own environment-bound job. Nothing is rebuilt between environments.
+- **The trigger-to-environment mapping lives in one place**, in the entry point's trigger and its `environment` selection, not scattered over jobs and steps.
+- **Environment branches and release tags are protected by rulesets.** An environment branch only changes through a pull request, never by a direct push. A release tag is created only by the people allowed to release, and is never moved or deleted.
+- **Production is gated.** The production environment has required reviewers and a deployment policy that only admits the production branch, or with tag promotion only release tags.
 - **Deployments to an environment run one at a time.** Every deploy job sets `concurrency` to a group named after the environment, with `cancel-in-progress: false`, so two runs never deploy to it at the same time.
 
 ## Tool configuration

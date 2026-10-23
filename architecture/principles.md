@@ -7,13 +7,13 @@ schemaVersion: 1
 
 # Architecture standards: Enterprise architecture principles
 
-The enterprise architecture context every solution is designed in. These are Pareto's IT architecture principles. **TODO:** confirm them as Pareto's own; they were adopted from an earlier client's architecture principles. They give direction to the design and realisation of processes, information systems, technical infrastructure and organisation, and every other standard in this vault works within them.
+The enterprise architecture context every solution is designed in. These principles are generic: they hold for any organisation we build for, internal or client. A client's own architecture principles take precedence where they differ, and the difference is recorded. They give direction to the design and realisation of processes, information systems, technical infrastructure and organisation, and every other standard in this vault works within them.
 
 ## Why architecture
 
 - **Aligned IT for growth.** Without an overarching direction, departments look for solutions at different moments, which leads to scattered solutions, a higher Total Cost of Ownership and a longer time to market.
-- **Architecture supports decisions.** It gives insight into the information systems, keeps IT costs (CAPEX and OPEX) in control, and prevents scattered solutions. It is supported by the managing board, IT and the business.
-- **Dynamic Architecture (DYA).** Pareto follows Sogeti's DYnamic Architecture model, because its flexibility fits a rapidly changing environment. **TODO:** confirm.
+- **Architecture supports decisions.** It gives insight into the information systems, keeps IT costs (CAPEX and OPEX) in control, and prevents scattered solutions. It needs the support of management, IT and the business.
+- **Architecture is dynamic.** It follows the pace of the organisation: direction is set up front, detail is added when a solution needs it.
 
 ## How principles work
 
@@ -40,20 +40,20 @@ Every application is assigned to one layer. The layer sets its expected pace of 
 
 - **We act in the interests of the external customer.** Every change considers the customer's perspective; exceptions need support within the organisation.
 - **We think big, but start simple.** Set the end goal at a high level, deliver in small steps, and prioritise requirements with MoSCoW, critical on everything below must-have.
-- **We implement uniform processes.** Processes are designed for growth and uniformity across countries, never for one-off exceptions; they are documented and reuse existing process components.
-- **We ensure trust in our information security.** Changes are checked against the Information Security Policy and the security standards for hardware, software and data; access rights are managed centrally and role-based.
+- **We implement uniform processes.** Processes are designed for growth and uniformity, never for one-off exceptions; they are documented and reuse existing process components.
+- **We ensure trust in our information security.** Changes are checked against the organisation's information security policy and the security standards for hardware, software and data; access rights are managed centrally and role-based.
 - **We do not change to benefit one department and harm others.** The impact on other departments and on dependencies earlier and later in the chain is assessed with the stakeholders.
 
 ## Information architecture
 
 - **We reuse before buy before build.** Every change starts with a scan of the existing application landscape. Buying or building only follows when existing functions are not sufficient.
-- **We design to enable scalable international growth.** Platforms are configurable for local laws, currencies, languages and business rules without core modifications; vendors show proven scalability and multi-tenant readiness; fragmented solutions are decommissioned in favour of standardised platforms.
+- **We design for growth.** Platforms are configurable for new markets, laws, currencies, languages and business rules without core modifications; vendors show proven scalability and multi-tenant readiness; fragmented solutions are decommissioned in favour of standardised platforms.
 - **We use a single source of truth.** Data can be traced back to its source, and a change reuses existing sources and fields before adding new ones.
 - **We standardise where possible, extend where needed.** Core applications are not customised; differentiation is built in extensions, integrations and adjacent solutions. A deviation from standard goes through the approval process, which assesses functionality, scalability, security, cost and upgradeability, and is documented.
 
 ## Technical architecture
 
-- **We ensure availability of critical data and systems.** Critical processes are in the IT Disaster Recovery plan, critical data and systems are known and backed up, and the people involved know the recovery procedure.
+- **We ensure availability of critical data and systems.** Critical processes are in the organisation's disaster recovery plan, critical data and systems are known and backed up, and the people involved know the recovery procedure.
 - **We use proven and available technology, resources and knowledge.** Technology is proven in relevant environments and supported by reliable partners; experimental solutions are only considered when no proven alternative exists.
 - **We use cloud and service-based solutions.** Cloud first for new solutions and major changes; service-based offerings (SaaS, managed platform services) are preferred over self-managed solutions. SaaS is governed as a business service focused on outcomes; IaaS and PaaS are governed as technical platforms with more internal responsibility.
 

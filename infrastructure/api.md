@@ -55,7 +55,7 @@ NOTE: Current document is unreviewed, but will be used as ground truth for the t
 - **Header-based and date-based versioning are not used.** The version stays visible in logs, traces, caches and the address bar.
 - **Paths are plural `kebab-case` collections**: `/v1/customers`, `/v1/customers/{id}/orders`, `/v1/customer-tags`.
 - **No verbs in paths.** An action endpoint (`POST /v1/customers/{id}/archive`) is allowed sparingly, when the action is genuinely orthogonal to the resource lifecycle. Otherwise model it as a state change through PATCH.
-- **Internal endpoints live under `/internal/...`**, are unversioned, and are excluded from the public OpenAPI document. They serve the platform's own queue and timer triggered functions inside the same deployment boundary.
+- **Internal endpoints live under `/internal/...`**, are unversioned, and are excluded from the public OpenAPI document. They serve the platform's own queue and timer triggered functions inside the same deployment boundary, and operations that a person runs, such as an owner running a GDPR erasure.
 
 ### Breaking and additive changes
 
@@ -96,7 +96,7 @@ NOTE: Current document is unreviewed, but will be used as ground truth for the t
 - **Locale formatting is the client's job.** The API ships ISO values.
 - **Money is a string decimal** (`"199.99"`) with a sibling `currency`. Other decimals where precision matters are strings as well. Counts, ages and quantities are JSON numbers.
 - **IDs are always strings**, even numeric ones. The client treats them as opaque and never generates them, the server does.
-- **Enum values match the stored form** exactly (`"active"`, `"partially_refunded"`), and query values follow the same casing.
+- **Enum values are stable `snake_case` names** (`"active"`, `"partially_refunded"`), mapped from the stored number at the boundary, and query values use the same names. A name is a contract like the stored number: it is never renamed, removed or reused.
 - **Flat by default, nested for genuine sub-objects.** An address or an amount with a varying currency stands alone as a value the client handles as a unit, so it is nested. Do not nest only to group flat fields (`audit: { createdAt, updatedAt }`).
 - **Absent values are consistent per endpoint.** Either the field is always present with `null`, or it is omitted. The semantics are documented, never mixed.
 - **A response never contains** internal non-GUID identifiers, framework handles or type-discriminator hints that are not part of the contract.
@@ -154,6 +154,7 @@ Pick the status from what actually happened. Custom 4xx codes (450, 477) are not
 - **`traceId` is the W3C trace-id** of the request, which Application Insights records as the operation ID.
 - **The `type` URI is `https://errors.pareto.example/<slug>`**, a placeholder domain that is reserved until a production error domain is confirmed. Per-app sub-namespacing (`https://errors.<app>.pareto.example/<slug>`) is allowed for a large catalog. Nothing user-facing ships against the placeholder.
 - **Every `code` and `type` is registered in the platform error catalog** (`docs/error-catalog.md` in the platform repo) before it appears in a response. The catalog holds the code, the type slug, the status, the title and a paragraph on what it means and how to recover. New error classes are added by pull request.
+- **Until the platform error catalog exists, each service keeps its own** `docs/error-catalog.md` in the same form. Its entries move to the platform catalog when that is created, unchanged, so no client sees a code change.
 - **No bespoke error shapes.** Not per endpoint, not per service, and no free-form `error: "..."` body.
 - **The default 500 response carries a generic `detail`** (`An unexpected error occurred. Reference: <traceId>.`). The real cause is in the log, and the response never carries an internal path, a class name or the exception message verbatim.
 - **Expected failures say only roughly what was wrong with the input**: the field and the rule it broke (`validationErrors`), or the stable `title`. They never explain internals, existence of resources the caller may not know about, or why the system decided so, because an error body is an attack surface.
@@ -281,6 +282,9 @@ Until an API is published through API Management, assume callers reach the app d
 - **They live under `/internal/...`** and are excluded from the public OpenAPI document. A separate internal document (`/internal/openapi.json`, restricted to ops) is allowed but is not the default.
 - **They are never versioned and never rate limited.**
 - **They keep the same error shape and status rules** as public endpoints.
+- **An operation a person runs is guarded by its own app role.** It requires a valid token plus an Entra ID app role for that one operation, assigned through a security group. The role grants nothing else, and no public endpoint accepts it.
+- **The operator calls with their own token**, never a shared key or a service identity, so the action is traceable to the person.
+- **Every operator operation writes an audit entry** with the operator, the operation and its target, by identifier.
 
 ## OpenAPI
 
@@ -289,7 +293,7 @@ Until an API is published through API Management, assume callers reach the app d
 - **The document is exported at build time** in the pipeline (`dotnet swagger tofile`), so consumers can generate clients without running the service.
 - **There is one document per major version**, at `/v<n>/openapi.json`. It shares types where the contract is shared and splits them where it diverges. Each is scoped with a `DocInclusionPredicate` on the path prefix.
 - **Every document contains**: `info.title` (`<App> API`), `info.version` (the major, which bumps together with the URL), `info.description` (one paragraph and a link to the platform docs), `servers` per environment from bound configuration, a document-level `security` scheme (Bearer JWT) that endpoints leave only when truly public, and `components.schemas` for the DTOs, the problem shape, the pagination envelope and the error codes.
-- **Shared schemas come from one platform NuGet package** (`Pareto.Platform.OpenApi`): `ProblemDetail`, `Page<T>`, the error envelope and the `traceId` and `code` extensions. The error and pagination shapes are identical in every document, and a change bumps the package.
+- **Shared schemas come from one platform NuGet package** (`Pareto.Platform.OpenApi`): `ProblemDetail`, `Page<T>`, the error envelope and the `traceId` and `code` extensions. The error and pagination shapes are identical in every document, and a change bumps the package. Until the package is published, a service defines these schemas once in its own API project, in the same shape, and replaces them with the package when it exists.
 - **No anonymous inline schemas.** Every shape is a named DTO, so `$ref` resolves and generated clients get proper names.
 - **Doc comments are added only when they carry information**: a non-obvious behaviour (idempotency semantics, an async 202 handle), or a DTO field whose purpose is not obvious from its name. `[SwaggerOperation(Summary = "Get customer")]` on a method named `GetCustomer` is noise.
 - **Non-trivial shapes get an example**, attached with schema filters or example providers.
