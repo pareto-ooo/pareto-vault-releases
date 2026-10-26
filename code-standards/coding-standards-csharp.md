@@ -2,6 +2,7 @@
 id: coding-standards-csharp
 scope: scoped
 severity: warning
+applies: all
 applies-to:
   - "**/*.cs"
 schemaVersion: 1

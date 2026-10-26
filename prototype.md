@@ -2,6 +2,7 @@
 id: prototype
 scope: scoped
 severity: warning
+applies: all
 schemaVersion: 1
 ---
 

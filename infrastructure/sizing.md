@@ -2,6 +2,7 @@
 id: sizing
 scope: global
 severity: warning
+applies: all
 schemaVersion: 1
 ---
 

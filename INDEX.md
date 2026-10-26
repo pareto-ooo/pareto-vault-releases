@@ -40,4 +40,5 @@
 ## root
 - `local-development.md` — local development in containers: Docker Desktop, a dev container per repository, the .NET SDK exception, emulated backing services, Aspire AppHost for C# and Compose otherwise, one start command, the developer's own Entra login, seed data; used when setting up or changing how a project runs on a laptop
 - `project-folder-layout.md` — [cross-cutting] top-level repository layout: code/, infrastructure/, pipeline/, docs/, what may live at the root, tool configuration and migrations placement; used when creating a repository or deciding where a new file or folder goes
+- `project-records.md` — [cross-cutting] where a project records what the vault asks: project definition, client substitutions, build readiness, decision records, data register; used when any rule asks a project to record something
 - `prototype.md` — throwaway discovery prototypes on @pareto4/ui-vue: output, language, styling, layout, interaction level, sample data; used when planning discovery-phase mockups, never for the real build

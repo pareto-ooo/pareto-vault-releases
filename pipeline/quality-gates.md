@@ -2,6 +2,7 @@
 id: quality-gates
 scope: scoped
 severity: warning
+applies: all
 applies-to:
   - "**/*.yml"
   - "**/*.yaml"

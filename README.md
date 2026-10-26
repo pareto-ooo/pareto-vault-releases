@@ -32,18 +32,27 @@ Add a new .MD file following roughly the formatting of the existing documents:
 
 The goal is an easy browsable data set of all knowledge required to judge, plan, and develop a software project within the company.
 Due to a proper index, the plan is: Relevant files get collected by the planning step and listed as mandatory reading. Implementation agents get this list, and read it.
-As a result, we want to design this document with the following in mind:
-- Do not repeat yourself 
-    - prevents future rot or contradictions
-- Do not refer to other documents
-    - creates hard references that are hard to keep track of, prevent future rot
+An agent may be given one document without the others, so each document has to make sense on its own. As a result, we write the vault with the following in mind:
+- One owning document per rule
+    - the rule is stated in full in exactly one document, and changed only there
+    - before adding a rule, search the vault for the topic; extend or replace the existing rule instead of writing a second one
+- Other documents may restate a rule in one line and name its owner by document id
+    - for example: "recorded as a decision record (`project-records`)"
+    - the one line keeps a document usable on its own; the id says where the full rule is and which document wins
+    - never restate more than the line, and never restate it differently
 - Do not contradict other items in the vault, be additive
     - Additive rule build constructively to make a complete ruleset
     - Contradictions cause confusion and problems upon agent interpretation
+- Facts a project must record go where `project-records.md` says
+    - a document that asks a project to record something names the record, not a location of its own
 
 ### The `header` block
 
 The header block in each file contains some basic information like a version and how important it is. The documentation for what is expected lives in pp-core.
+
+`applies` says which projects the document is for:
+- `all`: every project. On a client project, where the document names Pareto's own setup (tenant, company token, identity provider, capability model, compliance role, mail service), the client's takes its place, and the project records each substitution as `project-records.md` describes.
+- `internal`: internal Pareto projects only. A client project skips the document, and an open TODO in it is not a gap for that project.
 
 ### Keeping `INDEX.md` current
 

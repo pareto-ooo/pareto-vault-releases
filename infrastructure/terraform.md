@@ -2,6 +2,7 @@
 id: terraform
 scope: scoped
 severity: warning
+applies: all
 applies-to:
   - "**/*.tf"
   - "**/*.hcl"
@@ -120,7 +121,7 @@ Data that cannot be recovered once deleted (databases, state accounts) has two g
 - **The lifecycle guard is unconditional.** `prevent_destroy` must be a literal, so it cannot be wired to a variable, and removing it is a code change visible in a pull request.
 - **The lock may be variable-driven** (for example `deletion_protection`) for non-production, so dropping it is an explicit, reviewable act. The lock at server scope is inherited by the databases under it.
 - **The guard lives inside the module**, so every consumer inherits it without remembering to add it. A geo-secondary database carries the same two layers.
-- **Forcing a replace in a non-production environment** means disabling the lock variable and making a deliberate, pull-request-visible edit to the `lifecycle` block for the duration, and restoring both right after. Production deviations need an ADR update.
+- **Forcing a replace in a non-production environment** means disabling the lock variable and making a deliberate, pull-request-visible edit to the `lifecycle` block for the duration, and restoring both right after. Production deviations need a decision record.
 - **Both layers are never dropped together on a production database** unless the intent is permanent deletion, with the data exported and a final backup restore tested.
 - **The state account guard is never disabled.** If the account must be replaced, the state is migrated to a new account first and the old one deleted manually, never through `terraform destroy`.
 

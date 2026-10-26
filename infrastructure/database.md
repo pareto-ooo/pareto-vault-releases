@@ -2,6 +2,7 @@
 id: database
 scope: scoped
 severity: warning
+applies: all
 schemaVersion: 1
 ---
 

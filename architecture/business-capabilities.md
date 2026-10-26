@@ -2,6 +2,7 @@
 id: business-capabilities
 scope: global
 severity: warning
+applies: all
 schemaVersion: 1
 ---
 

@@ -2,6 +2,7 @@
 id: business-company
 scope: global
 severity: info
+applies: internal
 schemaVersion: 1
 ---
 

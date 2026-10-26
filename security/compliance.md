@@ -2,6 +2,7 @@
 id: compliance
 scope: global
 severity: critical
+applies: all
 schemaVersion: 1
 ---
 
@@ -102,7 +103,7 @@ Every package belongs to one of three levels, which decides what is needed befor
 
 - **TODO:** Confirm the three trust levels and who approves a level 2 package (the governance names the architect for implementation and the security officer for administration).
 - **TODO:** Decide whether an internal feed of verified packages is used, so integrity is checked once for all teams.
-- **TODO:** Decide where the dependency record is kept and how it is generated.
+- **TODO:** Decide how the dependency record (kept where `project-records` says) is generated.
 
 ## GDPR
 

@@ -2,6 +2,7 @@
 id: inter-service-communication
 scope: scoped
 severity: warning
+applies: all
 applies-to:
   - "**/*.Api/**/*.cs"
   - "**/*Controller.cs"

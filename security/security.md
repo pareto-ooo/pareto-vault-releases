@@ -2,6 +2,7 @@
 id: security
 scope: global
 severity: critical
+applies: all
 schemaVersion: 1
 ---
 

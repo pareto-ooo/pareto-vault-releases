@@ -2,6 +2,7 @@
 id: github-actions
 scope: scoped
 severity: warning
+applies: all
 applies-to:
   - "**/*.yml"
   - "**/*.yaml"

@@ -2,6 +2,7 @@
 id: api
 scope: scoped
 severity: warning
+applies: all
 applies-to:
   - "**/*.Api/**/*.cs"
   - "**/*Controller.cs"

@@ -2,6 +2,7 @@
 id: coding-standards-vuejs
 scope: scoped
 severity: warning
+applies: all
 applies-to:
   - "**/*.vue"
   - "**/*.ts"

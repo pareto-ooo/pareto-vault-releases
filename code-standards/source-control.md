@@ -2,6 +2,7 @@
 id: source-control
 scope: global
 severity: warning
+applies: all
 schemaVersion: 1
 ---
 

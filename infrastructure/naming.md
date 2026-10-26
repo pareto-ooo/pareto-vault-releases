@@ -2,6 +2,7 @@
 id: naming
 scope: scoped
 severity: warning
+applies: all
 applies-to:
   - "**/*.tf"
   - "**/*.hcl"

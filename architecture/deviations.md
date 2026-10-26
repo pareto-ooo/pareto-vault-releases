@@ -2,6 +2,7 @@
 id: deviations
 scope: global
 severity: warning
+applies: all
 schemaVersion: 1
 ---
 
@@ -17,7 +18,7 @@ How a project deviates from a principle or standard in this vault. Principles gu
 
 ## Recording a deviation
 
-- **A deviation is recorded when the choice is made,** in the project's decision log, before the work that depends on it is merged.
+- **A deviation is recorded when the choice is made,** as a decision record (`project-records`), before the work that depends on it is merged.
 - **The record states:** the principle or standard deviated from, the choice made, the reason, the alternatives considered, the impact, and whether it is easy or hard to reverse.
 - **The record carries the outcome:** approved or rejected, by which architect, and when.
 

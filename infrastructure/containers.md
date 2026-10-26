@@ -2,6 +2,7 @@
 id: containers
 scope: scoped
 severity: warning
+applies: all
 applies-to:
   - "**/Dockerfile"
   - "**/*.Dockerfile"

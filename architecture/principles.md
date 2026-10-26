@@ -2,6 +2,7 @@
 id: architecture-principles
 scope: global
 severity: warning
+applies: all
 schemaVersion: 1
 ---
 

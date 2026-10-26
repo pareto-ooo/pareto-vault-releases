@@ -2,6 +2,7 @@
 id: coding-standards-sql
 scope: scoped
 severity: warning
+applies: all
 applies-to:
   - "**/*.sql"
 schemaVersion: 1

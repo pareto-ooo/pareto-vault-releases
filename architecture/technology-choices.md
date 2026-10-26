@@ -2,6 +2,7 @@
 id: technology-choices
 scope: global
 severity: warning
+applies: all
 schemaVersion: 1
 ---
 
@@ -20,7 +21,7 @@ How we choose the services and technologies a workload is built on. These are th
 
 ## Selection criteria
 
-A service is chosen when it meets these criteria. A service that fails one needs a reason in an architecture decision.
+A service is chosen when it meets these criteria. A service that fails one needs a reason in a decision record (`project-records`).
 
 - **Requirements.** It meets the workload's functional needs and the performance targets of its workload profile.
 - **Entra ID.** It supports Entra ID authentication and managed identities, so no local accounts or stored keys are needed (Cloud Governance IM-01, IM-03).
@@ -44,6 +45,6 @@ These rules apply to every runtime, framework, language, database engine and pla
 
 ## Decisions
 
-- **A deviation is an architecture decision.** Choosing a non-Microsoft service when a Microsoft one meets the requirements, self-hosting a service that is available managed, or accepting a service that fails a selection criterion is a deviation, recorded and signed off by an architect.
+- **A deviation is a decision.** Choosing a non-Microsoft service when a Microsoft one meets the requirements, self-hosting a service that is available managed, or accepting a service that fails a selection criterion is a deviation, recorded as a decision record and signed off by an architect.
 - **Proven technology in production.** A preview feature or service is only used in production when no proven alternative exists, through an approved deviation that accepts the risk.
 - **A decision is revisited when its reason changes.** When the offering, the cost or the workload changes so that the original reason no longer holds, the decision is reviewed.
