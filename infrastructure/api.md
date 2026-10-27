@@ -253,7 +253,7 @@ All list endpoints share one query-parameter style, with `camelCase` names.
 - **The response contract is the same wherever the limit is enforced.** A fired limit answers 429, never 503 (503 means the service itself is down, and load shedding also answers 429). `Retry-After` is always set, in integer seconds.
 - **The body is the standard problem response** with `code: RATE_LIMITED` and a `retryAfter` extension that equals the header. Header and body never differ.
 - **`RateLimit-Limit`, `RateLimit-Remaining` and `RateLimit-Reset` are optional but recommended**, so smarter clients can adapt.
-- **What is limited**: public APIs, authenticated endpoints that do expensive work (search, exports, bulk operations), and the auth endpoints (`/login`, `/signup`, `/forgot-password`), which are limited strictest.
+- **What is limited**: public APIs, authenticated endpoints that do expensive work (search, exports, bulk operations), and any endpoint that verifies a credential such as an API key, which is limited strictest. Sign-in, sign-up and password reset belong to the identity provider (`authentication`), so the API has no endpoints for them.
 - **What is not limited**: internal endpoints (a self-DOS), health checks, and service-to-service traffic between trusted apps.
 - **Token bucket is the default algorithm.** Capacity is the burst allowance, the refill rate is the steady-state limit, and a request consumes one token. Fixed or sliding windows are allowed alternatives.
 - **The limit is declared per operation** in the OpenAPI document with the `x-rate-limit` extension (`scope`, `limit`, `windowSeconds`) and a `429` response referencing the shared `RateLimited` response. The extension is informational and does not replace the actual configuration.

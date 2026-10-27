@@ -19,7 +19,8 @@
 
 ## infrastructure
 - `infrastructure/api.md` — HTTP API rules: auth per operation, DTOs, routes and versioning, enum names, problem+json errors, paging, idempotency, rate limits, operator endpoints, OpenAPI; used when planning or reviewing HTTP endpoints
-- `infrastructure/containers.md` — placeholder container security rules: multi-stage, minimal pinned base, non-root, scanned and commit-tagged images; used when planning Dockerfiles or container build and deploy changes
+- `infrastructure/app-service.md` — apps on App Service for Linux: plan per app per environment, image pull, staging slot and swap, health check, Always On, singleton work, settings, hardening; used when planning App Service resources or releases
+- `infrastructure/containers.md` — container images: one per deployable, multi-stage, minimal pinned base, non-root, commit tags, scanned, registries per subscription, promotion by digest; used when planning Dockerfiles, images or registries
 - `infrastructure/database.md` — draft language-neutral database rules: one database per app, GUIDv4 ids (v7 for large tables), audit columns, concurrency, enums, indexes, migrations, Cosmos DB; used when planning schema or persistence work
 - `infrastructure/governance.md` — Cloud Governance Policy as infrastructure rules: tenants and subscriptions, tags, identity, network, data protection, logging, backup, cost; used when planning any Azure resource or landing-zone change
 - `infrastructure/inter-service-communication.md` — choosing HTTP vs Service Bus between apps: no call by default, queries vs facts, caller timeouts and fallback, ID-only versioned events, RBAC on topics; used when planning a cross-app call or event
@@ -35,6 +36,7 @@
 
 ## security
 - `security/compliance.md` — GDPR, ISO 27001, Microsoft first, regions, backups, classification levels, one-person teams, audit trail, threat models, evidence; used when planning personal data, dependencies, trust boundaries, backups or audits
+- `security/authentication.md` — sign-in on the default stack: app registrations per environment, MSAL with PKCE, token validation in the API, app roles, managed-identity callers, External ID; used when planning sign-in, roles or service calls
 - `security/security.md` — security principles and rules for authentication, authorization and role recovery, TLS, secrets, cryptography, Azure, input handling, logging and supply chain; used when planning any security-sensitive work or a review
 
 ## root

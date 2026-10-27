@@ -53,6 +53,15 @@ How the Pareto Cloud Governance Policy translates into infrastructure code. Thes
 
 - **Network boundaries follow the workload's segmentation strategy** (NS-01).
 - **Public network access is a deliberate choice.** Based on the workload's risk assessment, services are made private (private endpoints, VNet integration) or restricted with network rules. Public access with no restriction needs a documented reason (NS-02).
+- **The default stack has a network default per data classification** (NS-02). The workload's highest classification (`compliance`) picks the row; a different choice is a recorded decision.
+
+  | Highest classification | App Service | Azure SQL, Cosmos DB, Storage, Key Vault |
+  |---|---|---|
+  | `Public`, `Internal` | Public inbound over HTTPS | Public endpoint, firewall default-deny, open only to the app's outbound addresses |
+  | `Confidential` | Public inbound over HTTPS; outbound through VNet integration | Private endpoint, public network access disabled |
+  | `Restricted` | As `Confidential`, with a web application firewall in front of every public endpoint | Private endpoint, public network access disabled |
+
+- **Service Bus and the container registry keep public endpoints** at every level, with local authentication disabled, because events carry identifiers only (`inter-service-communication`) and images hold no data. A namespace that carries data in its messages follows the data services column.
 - **No public IP addresses on virtual machines.** Public access goes through a gateway or load balancer (NS-02).
 - **Insecure protocols are disabled** where a resource allows it, such as FTP on App Services and Function Apps (NS-08).
 

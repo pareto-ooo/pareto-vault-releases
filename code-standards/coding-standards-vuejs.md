@@ -545,7 +545,7 @@ The defaults for how screens are laid out and how they talk to the user. A proje
 
 ## API access
 
-- **One configured HTTP core** (`src/shared/api/http.ts`, a thin typed wrapper around `fetch`) holds the base URL, timeout, authentication, tracing and retry. Nothing else calls `fetch`. Axios is not used.
+- **One configured HTTP core** (`src/shared/api/http.ts`, a thin typed wrapper around `fetch`) holds the base URL, timeout, the bearer token from MSAL (`authentication`), tracing and retry. Nothing else calls `fetch`. Axios is not used.
 - **The HTTP core rejects only with `ApiRequestError`.** It maps the status code or failure to an `ApiErrorCode` and reads the `traceId` and the problem `code` (into `problemCode`) from the response.
 - **One client module per backend resource** (`customer-api.ts`). It returns typed models, never a `Response` or raw JSON.
 - **Request and response types are hand-written interfaces** in the feature's `<feature>-models.ts`, named after the backend DTO they mirror (`CustomerResponse`, `CreateCustomerRequest`). Required and nullable members follow the backend's OpenAPI document exactly. That document is served by the backend at `/v<n>/openapi.json` and exported with its build artifact.

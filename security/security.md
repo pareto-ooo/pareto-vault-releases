@@ -34,11 +34,11 @@ These principles are the catch-all rules. Every specific rule in this document, 
 
 ## Authentication
 
-- **SSO is the model, the Microsoft provider is the mechanism.** Single sign-on means an employee signs in once and reaches every internal application. The Microsoft provider is the platform's built-in Entra ID authentication in front of the application.
+- **SSO is the model, Entra ID is the mechanism.** Single sign-on means an employee signs in once and reaches every internal application. How an application on the default stack signs users in is owned by `authentication`.
 - **(ISO27001) Internal applications always use SSO** with the company identity provider. They have no separate login.
-- **Internal web apps authenticate at the edge** with the Microsoft provider, so no application code runs before the user is authenticated. Signing in within the code (PKCE through a library) is only used where the platform provider is not available.
+- **Internal web apps sign in through MSAL in the single-page app,** and the API rejects every request without a valid token (`authentication`). App Service authentication at the edge is for an internal app without an API of its own.
 - **The application still authorises** what the authenticated user may do.
-- **External applications do not use SSO.** Customers and other external users never sign in through the company identity provider. **TODO:** decide how external users sign in.
+- **External applications do not use SSO.** Customers and other external users never sign in through the company identity provider; they sign in through Microsoft Entra External ID (`authentication`).
 - **(ISO27001) Every request carries a token and the backend validates it**: signature, issuer, audience and expiry. The backend keeps no session state.
 - **Tokens are short-lived.** Access tokens live about one hour at most. A long-lived token needs a recorded reason.
 - **Refresh tokens rotate on every use and end with the session.** On logout the client discards every token it holds and ends the session at the identity provider. Where the identity provider can revoke the refresh token of one application, logout revokes it. Where it can only revoke every session the user has, as for a single-page app on Entra ID, the refresh token is left to expire, and its lifetime is never extended beyond the provider's default for that kind of client (24 hours for a single-page app on Entra ID).
@@ -48,7 +48,7 @@ These principles are the catch-all rules. Every specific rule in this document, 
 - **Anonymous endpoints are a documented exception.** Each one is explicitly marked as anonymous in code, declared with empty security in the API description, rate limited, strictly validated, and never reads or writes user-specific data. Health checks, marketing pages and sign-up are the usual cases.
 - **Health checks are anonymous by design.** `/health/live` (the process runs) and `/health/ready` (it can serve requests) are marked anonymous so the platform can probe them. They return only a status, never version, configuration or dependency detail, and they are not rate limited, because the platform's probes would trip the limit.
 - **(ISO27001) Authentication is never switched off or made conditional** on environment or startup mode. Its configuration is validated at startup so a missing value fails the boot instead of the first request.
-- **(ISO27001) Service-to-service calls use managed-identity tokens.** Never an end user's token and never a shared API key. The receiver checks the audience and the caller's identity against an explicit allowlist.
+- **(ISO27001) Service-to-service calls use managed-identity tokens.** Never an end user's token and never a shared API key. The receiver checks the audience and the caller's identity against an explicit allowlist: an application role assigned to each allowed caller (`authentication`).
 
 ## Authorization
 

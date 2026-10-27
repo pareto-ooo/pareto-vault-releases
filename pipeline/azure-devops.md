@@ -21,7 +21,7 @@ How we build Azure DevOps pipelines. These are the ground truth rules for all pi
 - **Composition over repetition.** A pipeline is built from small reusable building blocks: entry points use stages or jobs, stages use jobs, jobs use steps, steps call scripts. Business logic lives in exactly one place.
 - **Logic in scripts, not in YAML.** YAML describes *what* runs and *when*. Operational logic (loops, Azure CLI calls, conditions on resources) belongs in a script that can be read, tested and run on its own.
 - **Environment-agnostic by default.** The same templates deploy every environment. Differences between environments are variables, never copies of a template.
-- **Build once, deploy the artifact.** An application is built once per run. Deploy jobs only consume the published artifact, they never rebuild.
+- **Build once, deploy the artifact.** An application is built once per run. Deploy jobs only consume the published artifact or image, they never rebuild.
 - **No secrets in source control.** Ever.
 
 ## Folder structure
@@ -90,7 +90,7 @@ pipeline/
 - **Shared logic becomes a step template.**
 - **Built-in tasks may be used directly in a job.** A built-in task (checkout, download, publish artifact, extract files) does not need its own step template. A step template is for reusable combinations or for calling a script.
 - **Deployments use `deployment` jobs** bound to an Azure DevOps environment, so approvals and checks are enforced by the environment.
-- **Build and deploy are separate stages.** The build stage runs a normal job that produces and publishes the artifact: an application package, or a plan for infrastructure. The deploy stage runs a deployment job. Environment approvals are checked when a stage starts, so the approval sits between build and deploy and the reviewer can inspect the result before approving.
+- **Build and deploy are separate stages.** The build stage runs a normal job that produces and publishes the artifact: an application image (`containers`), or a plan for infrastructure. The deploy stage runs a deployment job. Environment approvals are checked when a stage starts, so the approval sits between build and deploy and the reviewer can inspect the result before approving.
 - **Independent build jobs run in parallel.** Build and test jobs that do not need each other's output have no `dependsOn` between them, also in a run that publishes. When a deployable combines the output of several build jobs (for example a host package that bundles the web app), a separate packaging job depends on them, builds the deployables and publishes them.
 - **A deploy job deploys only the published artifact.** It checks out the repository explicitly, but only to use the pipeline scripts.
 - **(ISO27001) Infrastructure is applied from the pipeline, never from a workstation.**

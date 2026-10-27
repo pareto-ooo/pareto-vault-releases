@@ -29,7 +29,8 @@ The technologies every custom-built application starts from: its frontend, backe
 
 ## Hosting
 
-- **Applications run on App Service.** Single sign-on at the edge through App Service authentication and the platform-managed certificates assume it.
+- **Applications run on App Service for Linux as container images,** built once by the pipeline and promoted between environments by digest (`app-service`, `containers`). Deployment slots, health checks and the platform-managed certificates assume it.
+- **Deploying a code package instead of an image, or App Service for Windows, is a non-blocking deviation.**
 - **Another Azure compute service is a non-blocking deviation.** Container Apps, for example, is recorded with its reason.
 - **Deploying to compute outside Azure is a blocking deviation.**
 
