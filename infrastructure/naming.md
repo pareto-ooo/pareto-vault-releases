@@ -11,7 +11,7 @@ schemaVersion: 1
 
 # Infrastructure standards: Naming convention
 
-How we name Azure resources. These are the ground truth rules for every Azure resource name. They follow the naming convention of the Cloud Governance Policy (RM-05), which is based on the Microsoft Cloud Adoption Framework.
+How we name Azure resources. These are the ground truth rules for every Azure resource name. They follow the naming convention of the Microsoft Cloud Adoption Framework.
 
 ## Naming philosophy
 
@@ -80,7 +80,7 @@ The scope of a resource decides how unique its name must be, and which component
 Entra ID security groups that grant roles follow their own convention, because they are not Azure resources.
 
 - **Security groups are named `SG_<Purpose>_<Role>[_<Specific>]`.** `SG` marks a security group; `<Purpose>` is the abbreviation of the application or area the group applies to (`ALL` for everybody); `<Role>` is the full role name; `<Specific>` is only added when the same role exists in several contexts.
-- **The group description documents the group:** why it exists, who owns it, and whether its membership is managed by ICT or by its owner.
+- **The group description documents the group:** why it exists, who owns it, and whether its membership is managed centrally by IT or by its owner.
 
 ## Restricted names
 

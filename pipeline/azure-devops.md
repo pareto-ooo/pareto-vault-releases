@@ -147,11 +147,11 @@ pipeline/
 - **Marketplace extensions only from trusted publishers.** Microsoft, Microsoft DevLabs and other established companies. Extensions from individual hobbyist publishers are not allowed.
 - **Extensions must be widely used.** Extensions with a low install count or a low review rating are not allowed.
 - **Extensions must be maintained.** An extension that has not been updated in the last year is not allowed, and an extension already in use that passes that mark is replaced.
-- **Extensions follow the Workspace Software Governance process.** An extension is never installed or worked around on our own initiative.
+- **Extensions follow the Software Governance rules** (`compliance`). An extension is never installed or worked around on our own initiative.
   1. **Check the organisation.** Verify whether the extension is already installed in the Azure DevOps organisation. If it is, it may be used.
   2. **Flag it.** If it is not installed, flag it to the developer. The pipeline does not use the extension until it is installed.
-  3. **Request it.** When the developer needs the extension, they request its installation through the Workspace Software Governance process.
-  4. **Review.** IT Ops, and where needed an architect, review the request against the rules above and install or reject the extension.
+  3. **Request it.** When the developer needs the extension, they request its installation from the IT director, as the Software Governance rules require (`compliance`).
+  4. **Review.** The IT director, or whom they delegate, and where needed an architect, review the request against the rules above and install or reject the extension.
   5. **Follow up.** After the decision, the solution is discussed further: with an approved extension the work continues, with a rejected one an alternative is chosen.
 
 ## Versions
@@ -223,4 +223,4 @@ Every `pipeline/` folder has a `README.md`. It gives a brief overview for develo
 
 ## Security
 
-- **(ISO27001)(Cloud Governance) Audit logging is on for the DevOps platform**, including non-production environments, and pipeline events are monitored for deviations.
+- **(ISO27001) Audit logging is on for the DevOps platform**, including non-production environments, and pipeline events are monitored for deviations.

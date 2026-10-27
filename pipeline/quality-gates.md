@@ -32,14 +32,14 @@ The checks a change must pass before it is merged.
 
 ## Security gate
 
-- **Each scan has one tool.** SonarCloud scans the code; GitHub Advanced Security (for GitHub, or for Azure DevOps) scans for secrets and vulnerable dependencies (Cloud Governance GS-10, DS-02); Trivy scans infrastructure code.
+- **Each scan has one tool.** SonarCloud scans the code; GitHub Advanced Security (for GitHub, or for Azure DevOps) scans for secrets and vulnerable dependencies; Trivy scans infrastructure code.
 - **A secret always blocks.** GitHub Advanced Security secret scanning is on with push protection: a secret is blocked at push, and a secret detected in a change blocks the merge.
 - **Critical and high findings in new code block.** Code vulnerabilities from SonarCloud, vulnerable dependencies introduced by the change from GitHub Advanced Security, and infrastructure misconfigurations from Trivy block the merge at critical or high severity.
 - **Medium findings warn, low findings report.** They are visible on the pull request but do not block it.
 - **Security hotspots are reviewed, not ignored.** A hotspot is resolved in SonarCloud as fixed or as safe with a reason, never left open.
 - **Trivy runs on every pull request that changes infrastructure code,** using the Trivy extension installed in the Azure DevOps organisation or the Trivy action on GitHub.
 - **The existing backlog is scanned on a schedule.** Dependency and infrastructure scans also run on a schedule against the main branch, because new vulnerabilities are published for code that did not change; findings become work items.
-- **Web applications are scanned periodically** with ZAP against the OWASP rule sets (Cloud Governance GS-10). This runs on a schedule against a deployed environment, not on the pull request.
+- **Web applications are scanned periodically** with ZAP against the OWASP rule sets. This runs on a schedule against a deployed environment, not on the pull request.
 - **An application without a deployed environment is scanned against itself in the pipeline.** Until it has one, the scheduled run starts the application stack in the pipeline and runs a ZAP baseline scan against it. Findings are handled like other scheduled findings.
 
 ## Without SonarCloud or GitHub Advanced Security

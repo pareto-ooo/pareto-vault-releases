@@ -36,7 +36,7 @@ Every workload records its profile in the project definition before any tier is 
 | Production | The agreed performance at the lowest cost | The tier proven by the performance test; redundancy, backups and retention follow the business criticality |
 
 - **Non-production never needs production availability.** Redundancy, high-availability options and long retention are production concerns, unless acceptance is used to test them.
-- **Non-production runs on dev/test pricing.** Non-production environments live in dev/test subscriptions, which have lower licence costs (Cloud Governance RM-03).
+- **Non-production runs on dev/test pricing.** Non-production environments live in dev/test subscriptions, which have lower licence costs.
 
 ## Availability by business criticality
 
@@ -68,7 +68,7 @@ Production availability follows the business criticality, as backups do (`compli
 - **Every workload has a cost estimate before its first deployment.** The estimate is per environment, per month, and is recorded in the project definition next to the workload profile.
 - **The estimate is built from the workload profile and the chosen tiers,** using the Azure Pricing Calculator or the Azure Retail Prices API with the prices of that moment.
 - **The estimate covers every cost driver,** not only compute: storage and its growth, data transfer, logging and monitoring ingestion, backups and licences.
-- **The estimate is checked against the subscription budget** (Cloud Governance CM-02) and refreshed whenever a tier changes.
+- **The estimate is checked against the subscription budget** and refreshed whenever a tier changes.
 
 ## Performance test
 

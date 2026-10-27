@@ -143,8 +143,8 @@ Reusable workflows (`on: workflow_call`) take the place of stage and job templat
 - **The organisation's allowed-actions policy is the enforcement.** An action outside the policy is never worked around on our own initiative.
   1. **Check the policy.** Verify whether the action is already allowed in the organisation. If it is, it may be used.
   2. **Flag it.** If it is not allowed, flag it to the developer. The workflow does not use the action until it is allowed.
-  3. **Request it.** When the developer needs the action, they request it through the Workspace Software Governance process.
-  4. **Review.** IT Ops, and where needed an architect, review the request against the rules above and allow or reject the action.
+  3. **Request it.** When the developer needs the action, they request it from the IT director, as the Software Governance rules require (`compliance`).
+  4. **Review.** The IT director, or whom they delegate, and where needed an architect, review the request against the rules above and allow or reject the action.
   5. **Follow up.** After the decision, the solution is discussed further: with an approved action the work continues, with a rejected one an alternative is chosen.
 
 ## Versions
@@ -211,4 +211,4 @@ Every `pipeline/` folder has a `README.md`. It gives a brief overview for develo
 
 ## Security
 
-- **(ISO27001)(Cloud Governance) The organisation audit log is retained and reviewed**, including events for non-production environments, and workflow events are monitored for deviations.
+- **(ISO27001) The organisation audit log is retained and reviewed**, including events for non-production environments, and workflow events are monitored for deviations.

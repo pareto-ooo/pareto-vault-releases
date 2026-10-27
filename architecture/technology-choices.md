@@ -14,18 +14,18 @@ How we choose the services and technologies a workload is built on. These are th
 
 - **Reuse before buy before build.** A new need is first matched against the existing application landscape and platforms; buying or building only follows when they are not sufficient.
 - **Fit for purpose.** A workload uses the services its purpose needs. A custom-built application starts from the default stack; a data platform and an integration each choose what fits them, within these rules.
-- **Microsoft first.** Azure is our cloud platform (Cloud Governance 2.1). When a Microsoft service and an alternative both meet the requirements, the Microsoft service is chosen.
+- **Microsoft first.** Azure is our cloud platform. When a Microsoft service and an alternative both meet the requirements, the Microsoft service is chosen.
 - **Managed over self-hosted.** Cloud first, and a managed service (SaaS, PaaS, serverless) is preferred over running and patching it ourselves on virtual machines or containers. Self-hosting needs a reason the managed option cannot meet.
 - **Fewer moving parts.** A new service is only added when an existing one in the workload cannot do the job. Every service adds cost, security surface and operational work.
-- **The workload team decides, within the boundaries.** Technology choices belong to the workload team (Cloud Governance GS-01), inside these rules and the company policies.
+- **The workload team decides, within the boundaries.** Technology choices belong to the workload team, inside these rules and the company policies.
 
 ## Selection criteria
 
 A service is chosen when it meets these criteria. A service that fails one needs a reason in a decision record (`project-records`).
 
 - **Requirements.** It meets the workload's functional needs and the performance targets of its workload profile.
-- **Entra ID.** It supports Entra ID authentication and managed identities, so no local accounts or stored keys are needed (Cloud Governance IM-01, IM-03).
-- **Network control.** It supports the network isolation the workload's risk assessment requires, such as private endpoints or network rules (Cloud Governance NS-02).
+- **Entra ID.** It supports Entra ID authentication and managed identities, so no local accounts or stored keys are needed.
+- **Network control.** It supports the network isolation the workload's risk assessment requires, such as private endpoints or network rules.
 - **Infrastructure as code.** It can be created and configured fully through infrastructure code (Terraform).
 - **Cost at expected scale.** Its cost at the workload's expected load fits the budget, and it can be sized down or paused outside production.
 - **Supported lifecycle.** It is generally available and supported by its vendor for the expected lifetime of the workload.

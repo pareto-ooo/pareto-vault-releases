@@ -13,8 +13,6 @@ schemaVersion: 1
 
 The rules for the HTTP APIs our services expose, for app-to-app integration and for frontend consumption alike.
 
-NOTE: Current document is unreviewed, but will be used as ground truth for the time being.
-
 ## Security
 
 - **Every endpoint declares its authentication and authorization.** The API description states the security requirement per operation.
@@ -40,11 +38,11 @@ NOTE: Current document is unreviewed, but will be used as ground truth for the t
 - **Naming.** The class is `<Resource>Controller` (singular noun), with a class-level `[Route("v<n>/<resource>")]`. Actions are named after the domain operation (`Get`, `Create`, `Archive`), not the verb (`GetCustomer`, `PostCustomer`).
 - **DTO names.** `<Resource>Response`, `Create<Resource>Request`, `Update<Resource>Request`, and `<Resource>Summary` for list views. A version-specific shape gets its own type (`CustomerV2Response`).
 - **Request and response DTOs are separate records**, never EF Core entities and never upstream adapter types. Serving an entity ships a navigation graph, leaks internal columns such as `created_by` and row versions, and turns every entity rename into a breaking change for consumers.
-- **A response DTO may carry derived fields the client needs** (`lineCount`, `totalCents`) instead of mirroring the entity's columns.
+- **A response DTO may carry derived fields the client needs** (`lineCount`, `total`) instead of mirroring the entity's columns.
 - **Validation attributes (DataAnnotations) sit on the request DTO** in the API project. `[ApiController]` triggers them at model binding, and manual `if (...) throw` validation in an action is banned.
 - **Return the DTO type directly where the shape is fixed**, rather than wrapping everything in `IActionResult`. Actions that create a resource use `CreatedAtAction` / `AcceptedAtAction`, which set `Location`.
 - **No `Dictionary<string, object>` or anonymous objects as a response.** A shape without a type has no schema, no OpenAPI and no client typing.
-- **GUID parameters bind as `Guid`** with a `{id:guid}` route constraint, so malformed values are rejected before the action runs.
+- **GUID parameters bind as `Guid`, without a route constraint,** so a malformed value fails model binding and is rejected with a 400 before the action runs. A `{id:guid}` constraint would turn it into a 404, because the route no longer matches.
 - **Never read the request body twice.** Buffering is a middleware-level decision with a documented reason, never an in-action workaround.
 - **Cross-cutting behaviour outside the framework's own is a marker attribute plus a globally registered action filter**, or a DI decorator for service-level concerns. Middleware applies to every request, an attribute and filter applies per action, and a decorator wraps specific service methods.
 - **Every HTTP request is handled synchronously** within the request scope, until there is a concrete reason not to (work that fans out to consumers unknown to this app, outlives a reasonable timeout at the 95th percentile, depends on an untrusted third party, or is scheduled). Deferred work is answered with 202.
@@ -64,12 +62,12 @@ NOTE: Current document is unreviewed, but will be used as ground truth for the t
 - **Everything else is additive and stays on the same major**: a new endpoint, a new response field, a new optional query parameter or body field, a required body field with a default, a widened type, a new error `code`, a new status in a 4xx slot.
 - **A breaking change is never shipped without a version bump.**
 - **Feature flags are not versions.** A flag rolls out behaviour without changing the schema. A flagged change that alters the response schema is a major bump regardless of the flag.
-- **Two majors coexist in one service.** Separate controllers (`CustomersV1Controller`, `CustomersV2Controller`) delegate to the same service layer, with the same persistence, and each major has its own OpenAPI document. Three majors in production is the threshold to start retiring the oldest.
+- **Two majors coexist in one service.** Separate controllers (`CustomerV1Controller`, `CustomerV2Controller`) delegate to the same service layer, with the same persistence, and each major has its own OpenAPI document. Three majors in production is the threshold to start retiring the oldest.
 
 ### Deprecation
 
 - **Announce first.** The timeline is 90 days minimum, and 180 days for APIs used across teams.
-- **Deprecated paths respond with `Deprecation: true`, a `Sunset` date and a `Link: <...>; rel="successor-version"` header.**
+- **Deprecated paths respond with a `Deprecation` header holding the date of deprecation (`@1688169599`, RFC 9745), a `Sunset` date and a `Link: <...>; rel="successor-version"` header.**
 - **Usage of a deprecated path is tracked** with a `deprecated_path` structured log field, so the migration is measurable.
 - **Sunset is 410 Gone** pointing at the successor, followed by removal (404) after a 30 day grace period. A path is never removed without warning.
 
@@ -149,7 +147,7 @@ Pick the status from what actually happened. Custom 4xx codes (450, 477) are not
 
 ## Errors
 
-- **Every error is `application/problem+json`** (RFC 7807) with `type`, `title` and `status`, plus the required extensions `code` and `traceId`, and `detail` and `instance` recommended. This includes errors generated by model validation and errors raised at the framework boundary.
+- **Every error is `application/problem+json`** (RFC 9457) with `type`, `title` and `status`, plus the required extensions `code` and `traceId`, and `detail` and `instance` recommended. This includes errors generated by model validation and errors raised at the framework boundary.
 - **Clients match on `code` (or the `type` slug)**, never on `detail` or on `status` alone. `type`, `title`, `status` and `code` are stable across versions. `detail` is free text that may be reworded or localised.
 - **`code` is a `SCREAMING_SNAKE_CASE` identifier** (`CUSTOMER_NOT_FOUND`). Distinct error classes get distinct codes, and a code is never overloaded. A retired code is retired forever.
 - **`traceId` is the W3C trace-id** of the request, which Application Insights records as the operation ID.
@@ -162,7 +160,7 @@ Pick the status from what actually happened. Custom 4xx codes (450, 477) are not
 - **Use `Microsoft.AspNetCore.Mvc.ProblemDetails`** with `code` and `traceId` as extensions. A custom error DTO is not used.
 - **One exception handler chain per service**, registered in one place: a domain handler and a fallback handler (`IExceptionHandler`, `AddProblemDetails()`, `UseExceptionHandler()`). It maps directly. It does not catch and rethrow a wrapped exception.
 - **`code` and `type` per exception class come from one resolver**, sourced from the error catalog.
-- **401 and 403 never reach the exception handlers.** The authentication middleware short-circuits, so its challenge and forbid events (`JwtBearerEvents`) emit the same problem shape.
+- **401 and 403 from the authentication and authorization middleware never reach the exception handlers.** The middleware short-circuits, so its challenge and forbid events (`JwtBearerEvents`) emit the same problem shape. A resource-level refusal raised in a use case (`security`) is a domain exception that the domain handler maps to 403.
 - **The handler logs 4xx at Information** without a stack (bad input is normal traffic) and **5xx at Error** with the full stack. The correlation scope gives every line the `traceId`, so a client-reported `traceId` finds the log line.
 
 ### Mapping of non-domain failures
@@ -288,15 +286,15 @@ Until an API is published through API Management, assume callers reach the app d
 
 ## OpenAPI
 
-- **OpenAPI is generated code-first from the controllers** with Swashbuckle, at runtime. The controller is the source of truth, the document is the by-product, and there is no hand-written `.yaml` or `.json` document in the repository.
+- **OpenAPI is generated code-first from the controllers** with the built-in `Microsoft.AspNetCore.OpenApi`, at runtime. The controller is the source of truth, the document is the by-product, and there is no hand-written `.yaml` or `.json` document in the repository.
 - **Metadata is complete.** `[ProducesResponseType]` is carried for every status a route can return, request DTOs carry DataAnnotations, and nullable reference types drive `required`. Missing metadata does not fail the build, it silently ships a worse contract.
-- **The document is exported at build time** in the pipeline (`dotnet swagger tofile`), so consumers can generate clients without running the service.
-- **There is one document per major version**, at `/v<n>/openapi.json`. It shares types where the contract is shared and splits them where it diverges. Each is scoped with a `DocInclusionPredicate` on the path prefix.
+- **The document is exported at build time** in the pipeline (`Microsoft.Extensions.ApiDescription.Server`), so consumers can generate clients without running the service.
+- **There is one document per major version**, at `/v<n>/openapi.json`. It shares types where the contract is shared and splits them where it diverges. Each is registered with its own `AddOpenApi("v<n>")` and scoped to its path prefix with `ShouldInclude`.
 - **Every document contains**: `info.title` (`<App> API`), `info.version` (the major, which bumps together with the URL), `info.description` (one paragraph and a link to the platform docs), `servers` per environment from bound configuration, a document-level `security` scheme (Bearer JWT) that endpoints leave only when truly public, and `components.schemas` for the DTOs, the problem shape, the pagination envelope and the error codes.
 - **The shared schemas are defined once per service,** in its API project: `ProblemDetail`, `Page<T>`, the error envelope and the `traceId` and `code` extensions. Their shape is the one this standard defines, so the error and pagination shapes are identical in every service's document.
 - **No anonymous inline schemas.** Every shape is a named DTO, so `$ref` resolves and generated clients get proper names.
-- **Doc comments are added only when they carry information**: a non-obvious behaviour (idempotency semantics, an async 202 handle), or a DTO field whose purpose is not obvious from its name. `[SwaggerOperation(Summary = "Get customer")]` on a method named `GetCustomer` is noise.
-- **Non-trivial shapes get an example**, attached with schema filters or example providers.
-- **One OpenAPI specification version across all services.** 3.0.x is what the tooling emits today, and the move to 3.1 happens platform-wide when the toolchain supports it natively.
-- **The Swagger UI is not exposed in production** unless it is deliberately a fully public API, or it is authenticated.
+- **Doc comments are added only when they carry information**: a non-obvious behaviour (idempotency semantics, an async 202 handle), or a DTO field whose purpose is not obvious from its name. `[EndpointSummary("Get customer")]` on the `Get` action of `CustomerController` is noise.
+- **Non-trivial shapes get an example**, attached with schema transformers.
+- **One OpenAPI specification version across all services.** It is 3.1, the version the built-in generator emits, and every service moves together when that changes.
+- **An interactive API explorer (such as Scalar or Swagger UI) is not exposed in production** unless it is deliberately a fully public API, or it is authenticated.
 - **Allowed sort and filter fields and the default sort are documented per endpoint.**

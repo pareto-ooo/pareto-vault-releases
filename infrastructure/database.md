@@ -1,6 +1,6 @@
 ---
 id: database
-scope: scoped
+scope: global
 severity: warning
 audience: all
 schemaVersion: 1
@@ -9,8 +9,6 @@ schemaVersion: 1
 # Database standards
 
 Rules for designing and developing database layouts, for relational and document databases. They hold for any language or ORM.
-
-NOTE: Current document is unreviewed, but will be used as ground truth for the time being.
 
 ## All databases
 
@@ -135,7 +133,7 @@ Take the default type unless the reason for deviating can be named.
 - **Raw SQL and bulk statements set `updated_at = SYSUTCDATETIME()` explicitly.** A trigger that stamps it is permitted but not the default, because it is one more object to maintain per table.
 - **Audit columns use one naming convention across all tables.** There is no `createdAt` here and `inserted_at` there.
 - **Not audit columns:** `created_via` / `updated_via` (the trace context holds that), a free-text `audit_note`, a `version` column (a concurrency token is its own column), and `deleted_at`.
-- **Audit columns do not hold history.** They say who last touched a row and when, not what it looked like before. History comes from the outbox events, an application-level `audit_log` table (`actor`, `action`, `resource_id`, `payload`, `trace_id`, `at`) added when product or compliance asks, or temporal tables, which are not the default because of their ceremony.
+- **Audit columns do not hold history.** They say who last touched a row and when, not what it looked like before. History comes from the outbox events, an application-level `audit_log` table (`actor`, `action`, `resource_id`, `payload`, `trace_id`, `at`) added when product or compliance asks, or temporal tables, which are not the default because of their ceremony. Such an `audit_log` is product history, not the security audit stream of `compliance`.
 
 ### Indexes
 
@@ -147,15 +145,15 @@ Take the default type unless the reason for deviating can be named.
 - **Pick the type by query:** nonclustered for equality, range and sort on scalars; filtered for "active subset" predicates; a persisted computed column plus nonclustered for hot JSON fields; full-text for text search; columnstore only for analytical scans, never on OLTP hot paths.
 - **Filtered indexes narrow the rows** (`WHERE deleted_at IS NULL`, unpublished outbox rows). They only take simple comparison predicates, writing to the table needs the ANSI `SET` options (`QUOTED_IDENTIFIER ON`), and the query predicate must match the index predicate. Keep the filter condition literal in the query, because a parameter can make the optimizer skip the index, and use `OPTION (RECOMPILE)` on drain-style queries where plan reuse fights the filter.
 - **`INCLUDE` columns serve very hot read paths only**, because they inflate the index.
-- **Computed columns are persisted before they are indexed.** A nondeterministic or non-persisted one cannot be.
+- **A computed column is indexed only when it is deterministic,** and an imprecise one (a floating-point result) only once it is persisted.
 - **Large insert-heavy tables that still fragment** get `FILLFACTOR = 90`. A nonclustered primary key with a different clustered key is a measured, deliberate deviation, never a scaffolding-time choice.
-- **Indexes are removed when unused.** Zero seeks for a quarter in `sys.dm_db_index_usage_stats` makes it a drop candidate. An index is not re-created on every deploy with `DROP INDEX IF EXISTS`.
+- **Indexes are removed when unused.** Zero seeks for a quarter in `sys.dm_db_index_usage_stats` makes it a drop candidate. The counters reset on a restart, failover or auto-pause, so the quarter must have run without one. An index is not re-created on every deploy with `DROP INDEX IF EXISTS`.
 - **`ORDER BY NEWID()` has no index fix.** Use `TABLESAMPLE` or a pre-randomised column.
 
 ### Index maintenance
 
 - **Rebuilding or reorganizing an index is a measured fix, not a routine ritual.** `sys.dm_db_index_physical_stats` finds fragmentation, and a rebuild is `ALTER INDEX ... REBUILD WITH (ONLINE = ON)` or `REORGANIZE`.
-- **TODO:** Define scheduled index maintenance: rebuild or reorganize and statistics updates (the brown-field project runs a weekly overnight maintenance stored procedure), and how this is owned and monitored.
+- **TODO:** Define scheduled index maintenance: rebuild or reorganize and statistics updates and how this is owned and monitored.
 
 ### Outbox table
 
@@ -163,7 +161,7 @@ Each app has its own `outbox` table (never shared across apps) that makes event 
 
 ```sql
 CREATE TABLE outbox (
-    id UNIQUEIDENTIFIER NOT NULL CONSTRAINT pk_outbox PRIMARY KEY
+    id BINARY(16) NOT NULL CONSTRAINT pk_outbox PRIMARY KEY
     , aggregate_type VARCHAR(100) NOT NULL
     , aggregate_id UNIQUEIDENTIFIER NOT NULL
     , topic VARCHAR(200) NOT NULL
@@ -171,18 +169,20 @@ CREATE TABLE outbox (
     , schema_version INT NOT NULL
     , payload NVARCHAR(MAX) NOT NULL
     , trace_parent VARCHAR(55)
-    , created_at DATETIMEOFFSET NOT NULL DEFAULT SYSUTCDATETIME()
+    , created_at DATETIMEOFFSET NOT NULL CONSTRAINT df_outbox_created_at DEFAULT SYSUTCDATETIME()
     , published_at DATETIMEOFFSET
     , CONSTRAINT ck_outbox_schema_version_positive CHECK (schema_version > 0)
     , CONSTRAINT ck_outbox_payload_json CHECK (ISJSON(payload) = 1)
 );
 
-CREATE INDEX idx_outbox_unpublished
+CREATE INDEX idx_outbox_created_at_where_unpublished
     ON outbox (created_at)
     WHERE published_at IS NULL;
 ```
 
-- **The row `id` is the event id** that subscribers deduplicate on. It is generated by the application, so it is known before the insert.
+- **The row `id` is the event id** that subscribers deduplicate on. It is a GUIDv7 generated by the application, because the outbox takes an insert with every change, so it is known before the insert.
+- **`aggregate_id` is `UNIQUEIDENTIFIER` for every aggregate,** also one whose own table stores a GUIDv7 as `BINARY(16)`, because it is not an ordered key here.
+- **The outbox is append-only apart from `published_at`,** so it has no `updated_at` or authorship columns.
 - **The filtered index on unpublished rows is mandatory.** It keeps the index the size of the backlog, not of the history. The drain query keeps `published_at IS NULL` literal.
 - **`aggregate_id` has no foreign key.** Outbox rows outlive their aggregate (the `deleted` event still publishes), and several aggregate types share the column.
 - **A published row is marked with `published_at`, never deleted on publish.** A failed publish leaves it null, and the next drain picks it up. Ordering is by `created_at`, without aggregate-scoped sequence numbers, unless an app needs strict per-aggregate order that this does not deliver.
@@ -234,12 +234,12 @@ CREATE INDEX idx_outbox_unpublished
 - **Queries are cost-aware (request units).** Avoid cross-partition queries on hot paths, and project only the properties needed.
 - **There are no migrations.** The schema evolves through a `schemaVersion` property on documents, with reads tolerant of older shapes and an upgrade done lazily on write or by a background job.
 - **Containers and indexing policy come from infrastructure-as-code.**
-- **Bulk changes are background jobs over partitions**, since bulk update and delete are not available.
+- **Bulk changes are background jobs over partitions**, since Cosmos DB has no set-based update or delete statement.
 
 ## Security
 
-- **Queries are parameterized or typed.** Never build SQL by concatenating or formatting input into a string. Where raw SQL is unavoidable it uses the parameterized forms and carries a one-line reason.
+- **Queries are parameterized or typed,** as All databases describes.
 - **The application connects with its own least-privilege identity.** No shared accounts, no administrator credentials in application settings.
-- **Tenant and authorization filters stay on.** A bypass removes only the single filter it needs, never all of them. Bypass paths are named, intent-revealing and tested.
+- **Tenant and authorization filters stay on.** A bypass removes only the single filter it needs (see All databases), and bypass paths are named, intent-revealing and tested.
 - **Verbose database logging is off outside the Local environment.** Sensitive-data logging and detailed errors write parameter values (personal data) into logs.
 - **(GDPR) Personal and confidential columns are identified** and have a defined retention period and an erasure path. Soft delete is not erasure.

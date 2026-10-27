@@ -82,7 +82,7 @@ Example from the current index:
 
 ```markdown
 ## infrastructure
-- `infrastructure/database.md` — draft language-neutral database rules: one database per app, GUIDv4 ids (v7 for large tables), audit columns, concurrency, enums, indexes, migrations, Cosmos DB; used when planning schema or persistence work
+- `infrastructure/database.md` — language-neutral database rules: one database per app, GUIDv4 ids (v7 for large tables), keyset paging, audit columns, concurrency, outbox, migrations, Cosmos DB; used when planning schema or persistence work
 
 ## root
 - `project-folder-layout.md` — [cross-cutting] top-level repository layout: code/, infrastructure/, pipeline/, docs/, what may live at the root, tool configuration and migrations; used when creating a repository or deciding where a new file goes

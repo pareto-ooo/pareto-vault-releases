@@ -139,7 +139,7 @@ Data that cannot be recovered once deleted (databases, state accounts) has two g
 
 ## Terraform names
 
-Names inside the code follow the Terraform best practices referenced by the Cloud Governance Policy (RM-05).
+Names inside the code follow the Terraform best practices.
 
 - **Underscores, not hyphens,** in resource names, data source names, variables, locals and outputs.
 - **Lowercase letters and digits only.**

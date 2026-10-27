@@ -43,7 +43,7 @@ These principles are the catch-all rules. Every specific rule in this document, 
 - **Tokens are short-lived.** Access tokens live about one hour at most. A long-lived token needs a recorded reason.
 - **Refresh tokens rotate on every use and end with the session.** On logout the client discards every token it holds and ends the session at the identity provider. Where the identity provider can revoke the refresh token of one application, logout revokes it. Where it can only revoke every session the user has, as for a single-page app on Entra ID, the refresh token is left to expire, and its lifetime is never extended beyond the provider's default for that kind of client (24 hours for a single-page app on Entra ID).
 - **(ISO27001) Every Pareto login is multi-factor, or machine to machine.** Employee logins go through the company identity provider, which enforces two-factor authentication wherever possible. No Pareto account is exempt, and no exclusion or "legacy" sign-in path is left open. Passwordless sign-in is preferred. This does not apply to external users of external applications.
-- **Every account that has or can get access to business-critical or mission-critical workloads uses a hardware security token (a YubiKey).** The accounts that carry one are the dedicated ADC-#### accounts. Any other login mechanism needs two-factor authentication as well, and a recorded decision for why the company identity provider is not used. Non-human callers use machine-to-machine credentials (managed identity, federated or signed tokens), never a person's login.
+- **Every account that has or can get access to business-critical or mission-critical workloads uses a hardware security key.** It is a separate administrative account, used for nothing else. Any other login mechanism needs two-factor authentication as well, and a recorded decision for why the company identity provider is not used. Non-human callers use machine-to-machine credentials (managed identity, federated or signed tokens), never a person's login.
 - **(ISO27001) Public API keys are a machine-to-machine exception.** An API key is allowed only for a non-human caller that cannot use token-based authentication. It is issued per client, scoped to the minimum, stored hashed, revocable, rotated, rate limited and never used to sign in a person.
 - **Anonymous endpoints are a documented exception.** Each one is explicitly marked as anonymous in code, declared with empty security in the API description, rate limited, strictly validated, and never reads or writes user-specific data. Health checks, marketing pages and sign-up are the usual cases.
 - **Health checks are anonymous by design.** `/health/live` (the process runs) and `/health/ready` (it can serve requests) are marked anonymous so the platform can probe them. They return only a status, never version, configuration or dependency detail, and they are not rate limited, because the platform's probes would trip the limit.
@@ -72,7 +72,7 @@ These principles are the catch-all rules. Every specific rule in this document, 
 - **HTTPS-only is on for every web app**, and HTTP is answered with a permanent redirect. It is switched on as a follow-up change once the certificate is active, never in the same change that creates the domain binding.
 - **Strict transport security headers are sent** on every web response.
 - **Client-side certificate pinning never pins the leaf certificate**, because a leaf certificate rotates at every renewal. Pin the intermediate or root, or do not pin.
-- **(Cloud Governance) Self-signed certificates are for internal use only, and wildcard certificates only for internal-facing websites and services.** Anything public-facing has a certificate for its exact hostname from a trusted authority.
+- **Self-signed certificates are for internal use only, and wildcard certificates only for internal-facing websites and services.** Anything public-facing has a certificate for its exact hostname from a trusted authority.
 - **(ISO27001) TLS certificate validation is never disabled** in code, configuration or tests, for any environment.
 - **Database and storage connections require encryption** and reject unencrypted connections.
 
@@ -101,7 +101,7 @@ These principles are the catch-all rules. Every specific rule in this document, 
 
 ### Persistent Storage
 
-- **(ISO27001)(GDPR)(Cloud Governance) Backups are automated, protected, monitored and tested for restore.** Business-critical resources are backed up regularly and automatically. Backups are encrypted and access-controlled, with deletion and retention changes limited and audited, so ransomware or a malicious insider cannot remove them. Backup health is monitored, and restores are tested against the recovery time and recovery point set by the business criticality of the workload. A backup that has never been restored is not a backup.
+- **(ISO27001)(GDPR) Backups are automated, protected, monitored and tested for restore.** Business-critical resources are backed up regularly and automatically. Backups are encrypted and access-controlled, with deletion and retention changes limited and audited, so ransomware or a malicious insider cannot remove them. Backup health is monitored, and restores are tested against the recovery time and recovery point set by the business criticality of the workload. A backup that has never been restored is not a backup.
 - **(ISO27001)(GDPR) Production data is never copied into lower environments.** Test data is synthetic or properly anonymised.
 
 ## Azure
@@ -111,9 +111,9 @@ Rules that only hold on our Microsoft Azure platform. The general rules in the o
 ### Identity (Entra ID)
 
 - **(ISO27001) The company identity provider is Microsoft Entra ID (OIDC).** It is used for Pareto employees and internal applications only; external users are covered under Authentication.
-- **(Cloud Governance) App registrations are created by developers with the built-in Application Developer role.** The Application Administrator role is granted to no one, users cannot consent to applications on their own, and tenant-wide admin consent (for example when deploying to acceptance or production) is requested through the identity team.
+- **App registrations are created by developers with the built-in Application Developer role.** The Application Administrator role is granted to no one, users cannot consent to applications on their own, and tenant-wide admin consent (for example when deploying to acceptance or production) is requested through the identity team.
 - **(ISO27001) No standing privileged access.** Subscription owners, and contributors on subscriptions that hold production, activate their role just in time through privileged identity management. Highly privileged tenant roles use separate accounts with maximum protection.
-- **(ISO27001) Access is reviewed every three months.** Each team reviews who has access to its resources, removes what is no longer needed, and records the review in the ticketing system. Access changes are recorded as requests there as well.
+- **(ISO27001) Access is reviewed every three months.** Each team reviews who has access to its resources, removes what is no longer needed, and records the review as a work item. Access changes are recorded as work items as well.
 
 ### Roles and access (RBAC)
 
@@ -145,7 +145,7 @@ Rules that only hold on our Microsoft Azure platform. The general rules in the o
 
 ### Logging and monitoring
 
-- **(Cloud Governance)(ISO27001) Platform logs are routed with diagnostic settings.** The Azure Activity Log is deleted by the platform after 90 days, so it is routed to a Log Analytics workspace for up to a year, or to storage for longer.
+- **(ISO27001) Platform logs are routed with diagnostic settings.** The Azure Activity Log is deleted by the platform after 90 days, so it is routed to a Log Analytics workspace for up to a year, or to storage for longer.
 
 ## Input handling
 
@@ -178,12 +178,12 @@ Rules that only hold on our Microsoft Azure platform. The general rules in the o
 - **Structured logging with named fields.** No string interpolation into messages. It keeps fields queryable and removes the temptation to add personal data "for context".
 - **Free text is dangerous.** User-provided text, search terms and error messages that echo input are logged as a length, a fact or a hash, never as content.
 - **Redact at the boundary** when a value must appear (a third-party error that embeds input). Redaction is the second defence. The first is not logging it.
-- **(ISO27001)(GDPR) Security events go to a dedicated audit stream** kept at least two years and then purged: authentication success and failure, authorization failures, privilege and role changes, and access to sensitive data (exports, bulk reads). The stream is append-only, and nothing in the application changes or deletes audit lines.
+- **(ISO27001)(GDPR) Security events go to a dedicated audit stream** kept as `compliance` requires: authentication success and failure, authorization failures, privilege and role changes, and access to sensitive data (exports, bulk reads). The stream is append-only, and nothing in the application changes or deletes audit lines.
 - **Production log verbosity is Information at most.** Debug is enabled only for an incident under controlled access, and then switched back.
 - **No temporary debug logging of objects.** It ships, and a personal-data tap stays open for the hour it takes to notice.
 - **(ISO27001) Log access is itself controlled and recorded**, scoped per app, and used only for an incident or a documented reason.
-- **(Cloud Governance)(ISO27001) Security logs go where the company monitors them.** Platform logs are routed to a store we control, because the platform deletes some of them itself. The log categories that the information security officer makes mandatory are delivered to the central security monitoring service.
-- **(Cloud Governance)(ISO27001) Time comes from approved sources.** Timestamps carry the date, time and time zone (UTC), and compute resources use the platform's default time server unless there is a specific requirement.
+- **(ISO27001) Security logs go where the company monitors them.** Platform logs are routed to a store we control, because the platform deletes some of them itself. The log categories that the information security officer makes mandatory are delivered to the central security monitoring service.
+- **(ISO27001) Time comes from approved sources.** Timestamps carry the date, time and time zone (UTC), and compute resources use the platform's default time server unless there is a specific requirement.
 - **(GDPR) Client-side logs are not shipped automatically.** A diagnostics report is explicitly user-initiated, shows the user what is sent, and excludes form input and page contents.
 
 ## Dependencies and supply chain
@@ -196,7 +196,7 @@ Rules that only hold on our Microsoft Azure platform. The general rules in the o
 - **(ISO27001) Runtimes, frameworks and base images stay on a supported version.** An end-of-life runtime, framework or base image is treated as a vulnerable dependency, because it no longer receives security fixes. Its upgrade is planned before support ends.
 - **(ISO27001) A known vulnerability in a deployed dependency is fixed within a set time**, by severity, counted from when it is published or found. The time limit applies to code already in production, where the merge gate does not reach. Remediation is risk-based and automated where possible: a more severe vulnerability in a more critical workload is fixed first.
 - **(ISO27001) Findings from penetration tests and audits about outdated or vulnerable components are handled like scan findings**: recorded with an owner, triaged on reachability, fixed or accepted within the deadline, and the fix is checked on the retest.
-- **(ISO27001)(Cloud Governance) Vulnerability scanning runs on every pull request** and daily on the main branch, since a newly published vulnerability affects code that has not changed.
+- **(ISO27001) Vulnerability scanning runs on every pull request** and daily on the main branch, since a newly published vulnerability affects code that has not changed.
 - **(ISO27001) Critical and High findings block the merge.** Medium surfaces in the pull request for the reviewer, and Low and informational are reviewed periodically. There is no merge-anyway option, and the gate is never bypassed (`continueOnError`).
 - **Triage is analysis, not assumption**: read the vulnerability, check whether the vulnerable path is reachable in this app, then upgrade, work around, or replace. Risk acceptance is a last resort and is recorded with the identifier, the reachability analysis and a re-check date. Allowlist the specific vulnerability, never the whole library, and review the list during new phase planning.
 - **Test-only dependencies are at most Medium**, unless the test host runs production code.

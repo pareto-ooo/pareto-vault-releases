@@ -16,7 +16,7 @@ How we select and implement bought business applications delivered as Software a
 - **Reuse before buy.** A documented business need is first checked against the applications we already own; buying only follows when they cannot meet it.
 - **Buy what the business needs.** Only the features and licences needed now are bought, with the future in mind, not every available add-on.
 - **Proven technology and vendors.** We are not the first customer; the product and vendor are proven in comparable organisations.
-- **Configuration over customisation.** The application is used out of the box and configured; a missing feature is first requested from the vendor. Custom development needs a positive business case approved by ICT management.
+- **Configuration over customisation.** The application is used out of the box and configured; a missing feature is first requested from the vendor. Custom development needs a positive business case approved by the IT director.
 
 ## Selection
 
@@ -42,7 +42,7 @@ How we select and implement bought business applications delivered as Software a
 
 ## Integration and mail
 
-- **Integrations with our own applications** follow the same rules as in-house integrations; integration that needs custom development is arranged with ICT Development.
+- **Integrations with our own applications** follow the same rules as in-house integrations; integration that needs custom development is built as its own project, to the in-house standards.
 - **Mail to customers goes through our central mail delivery service.** A SaaS application that sends mail from our domain connects to it as its SMTP server or through its API; it never sends customer mail through its own mail service in our name.
 - **Mail delivery is centralised on purpose.** One provider gives every application the same mail templating and throttling and one trusted, allow-listed mail server, and it keeps the number of parties that can send mail in our name small.
 - **Internal mail uses Microsoft Exchange.** An application that only mails employees sends through Exchange with a service account of its own.
@@ -50,9 +50,9 @@ How we select and implement bought business applications delivered as Software a
 
 ## Operation
 
-- **Every application has a business owner** known to ICT, responsible for billing and administrative questions.
+- **Every application has a business owner** known to the IT director, responsible for billing and administrative questions.
 - **Business-critical and mission-critical applications** also have key users and a product owner.
 - **Support is available in our time zone (CET/CEST) and in English.**
 - **Updates are planned and announced** by the vendor with a roadmap, take place outside business hours, and a test environment is available for larger upgrades.
-- **The agreement (SLA) records** contacts and escalation, uptime and penalties, performance, scalability, backup and recovery with RTO and RPO, data extraction and deletion, security and incident response, support levels, service reviews and the update process. When a vendor offers no negotiable SLA, ICT still records these points from the vendor's published terms.
+- **The agreement (SLA) records** contacts and escalation, uptime and penalties, performance, scalability, backup and recovery with RTO and RPO, data extraction and deletion, security and incident response, support levels, service reviews and the update process. When a vendor offers no negotiable SLA, the IT director still records these points from the vendor's published terms.
 - **Compliance is part of the agreement:** GDPR (including a data protection impact assessment where personal data is processed), NIS2, data breach notification without undue delay, retention, and the right to audit.
