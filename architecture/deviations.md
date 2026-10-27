@@ -2,7 +2,7 @@
 id: deviations
 scope: global
 severity: warning
-applies: all
+audience: all
 schemaVersion: 1
 ---
 
@@ -32,7 +32,7 @@ How a project deviates from a principle or standard in this vault. Principles gu
 
 - **When in doubt, it is hard to reverse.** A deviation that cannot clearly be classified as easy to reverse is treated as blocking.
 - **Security and compliance deviations are always blocking.** A deviation from a security, compliance or cloud governance rule waits for sign-off.
-- **A security deviation has its own approvers.** Adopting any additions or deviations from the security rules needs consultation with the information security officer and the approval of the IT director, and additionally the enterprise architect if architectural change is involved. These are roles, not people: each project records who holds each role in its project definition before its first deviation. One person may hold several roles when the organisation has no separate holder, and the record says so.
+- **A security deviation has its own approvers.** Adopting any additions or deviations from the security rules (`security`) needs consultation with the information security officer and the approval of the IT director, and additionally the enterprise architect if architectural change is involved. These are roles, not people: each project records who holds each role in its project definition before its first deviation. One person may hold several roles when the organisation has no separate holder, and the record says so.
 - **A rejected easy deviation is reworked.** When the architect rejects a non-blocking deviation, the work is changed to the approved direction, and the rework is planned like any other work.
 
 ## Blocking only what is affected

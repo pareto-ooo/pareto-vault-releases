@@ -2,7 +2,7 @@
 id: security
 scope: global
 severity: critical
-applies: all
+audience: all
 schemaVersion: 1
 ---
 
@@ -163,7 +163,7 @@ Rules that only hold on our Microsoft Azure platform. The general rules in the o
 ### Events and messages
 
 - **Subscribers validate the payload against the published schema.** A non-conforming message goes to the dead-letter queue for review and does not crash the subscriber. It is a data quality issue, not a transport failure.
-- **Internal endpoints validate both the caller's token and the body.** Coming from our own function is not a reason to skip either.
+- **Internal endpoints validate both the caller's token and the body.** Coming from our own background worker is not a reason to skip either.
 - **Handlers are idempotent**, because messages are delivered at least once.
 
 ## Logging and audit

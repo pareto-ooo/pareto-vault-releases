@@ -1,8 +1,8 @@
 ---
-id: architecture-principles
+id: principles
 scope: global
 severity: warning
-applies: all
+audience: all
 schemaVersion: 1
 ---
 
@@ -40,7 +40,7 @@ Every application is assigned to one layer. The layer sets its expected pace of 
 ## Business architecture
 
 - **We act in the interests of the external customer.** Every change considers the customer's perspective; exceptions need support within the organisation.
-- **We think big, but start simple.** Set the end goal at a high level, deliver in small steps, and prioritise requirements with MoSCoW, critical on everything below must-have.
+- **We think big, but start simple.** Set the end goal at a high level, deliver in small steps, and prioritise requirements with MoSCoW, and be critical of everything below must-have.
 - **We implement uniform processes.** Processes are designed for growth and uniformity, never for one-off exceptions; they are documented and reuse existing process components.
 - **We ensure trust in our information security.** Changes are checked against the organisation's information security policy and the security standards for hardware, software and data; access rights are managed centrally and role-based.
 - **We do not change to benefit one department and harm others.** The impact on other departments and on dependencies earlier and later in the chain is assessed with the stakeholders.

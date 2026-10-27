@@ -2,7 +2,7 @@
 id: technology-choices
 scope: global
 severity: warning
-applies: all
+audience: all
 schemaVersion: 1
 ---
 

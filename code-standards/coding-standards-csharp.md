@@ -2,7 +2,7 @@
 id: coding-standards-csharp
 scope: scoped
 severity: warning
-applies: all
+audience: all
 applies-to:
   - "**/*.cs"
 schemaVersion: 1
@@ -10,7 +10,7 @@ schemaVersion: 1
 
 # Coding standards: C#
 
-The C#/.NET specifics on top of the coding standards for all languages, which are not repeated here.
+The C#/.NET specifics on top of the coding standards for all languages (`coding-standards-all-languages`), which are not repeated here.
 
 ## Basic Stack
 - .NET latest LTS
@@ -81,14 +81,14 @@ The C#/.NET specifics on top of the coding standards for all languages, which ar
 - **Name encoding exceptions.** The `I` prefix for interfaces, and the `Async` suffix only when a non-async overload with the same name exists (`GetUser`, not `GetUserAsync`).
 - **XML `<summary>`** (controllers, request/response DTOs) because Swagger/OpenAPI is generated from it. It is API documentation, not comment smell.
 - **null-forgiving operator `!` is banned in code.** Two exceptions: the `= null!` initializer on an EF Core entity property, and test code.
-- **Not Found Exceptions** Repositories can return nullable objects for not found. This will cause a service level exception. A service does not return null.
+- **Not Found Exceptions** A repository method that may find nothing is a `Find` and returns a nullable object (`coding-standards-all-languages`, Get and Find). The service turns that into a not-found exception; a service does not return null.
 - **Required over Nullable** A data object should enforce with required instead of using nullable
 - **Sealed by default** Unless inheritance is desired/planned, a class is sealed.
 - **Domain IDs** Domain object IDs are unique ValueObject types to prevent mixing identifiers from different types.
 - **Switch Statement** A switch statement always has a defined default arm that often fails loudly. A new option/member/value should be explicitly flagged by this default.
 - **Keep Banned APIs** using `Microsoft.CodeAnalysis.BannedApiAnalyzers` apply a strict ban on use of items not allowed in these C# rules like `DateTime.Now` outside of a dedicated time providing class. Alternative logging to ILogger, etc. They then generate an error to easily guard against abuse.
 - **Project Naming** `<Company>.<App>.<Layer>` for production projects (`Pareto.Hello.Domain`) and `.Tests` / `.IntegrationTests` for test projects.
-- **Types are Explicit.** Types should never use var, it hampers readability. Prefer: `MyClass c = new();` as notation.
+- **Types are Explicit.** Types should never use var, it hampers readability. Prefer: `Customer customer = new();` as notation.
 
 ## Databases
 
@@ -111,7 +111,7 @@ Databases in C# are always managed through EF Core. Here are the guidelines for 
 - **Every global query filter is a named filter**, with the name held in one constant. A bypass disables only the filter it needs (`IgnoreQueryFilters(["SoftDelete"])`), never all of them, because tenancy and authorization filters must stay on. Parameterless `IgnoreQueryFilters()` is banned.
 - **Each bypass method has a test** proving that the remaining filters still apply.
 - **Never enable lazy-loading proxies.** Related data is loaded explicitly or projected.
-- **Raw SQL (`FromSql`/`SqlQuery`) is allowed only when LINQ cannot express the query.** It uses the interpolated forms, never string concatenation, and the SQL inside follows coding-standards-sql.md.
+- **Raw SQL (`FromSql`/`SqlQuery`) is allowed only when LINQ cannot express the query.** It uses the interpolated forms, never string concatenation, and the SQL inside follows `coding-standards-sql`.
 - **`EnableSensitiveDataLogging` and `EnableDetailedErrors` are off everywhere except the Local environment.** Both write parameter values (PII) into logs.
 - **The EF Core major version matches the .NET major version.**
 
@@ -131,7 +131,7 @@ Databases in C# are always managed through EF Core. Here are the guidelines for 
 
 ### Repositories and transactions - Relational Providers
 
-- **One `SaveChangesAsync` is one transaction** for everything the change tracker holds. A use case that also uses a direct write (`ExecuteUpdate`/`ExecuteDelete`, raw SQL) opens one explicit transaction around all of it, in the entry-point use case and nowhere else. Never in a repository or controller, and never `TransactionScope`. The idempotency claim (api.md) is the one exception: it commits in its own short transaction before the use case runs.
+- **One `SaveChangesAsync` is one transaction** for everything the change tracker holds. A use case that also uses a direct write (`ExecuteUpdate`/`ExecuteDelete`, raw SQL) opens one explicit transaction around all of it, in the entry-point use case and nowhere else. Never in a repository or controller, and never `TransactionScope`. The idempotency claim (`api`) is the one exception: it commits in its own short transaction before the use case runs.
 - **With retry-on-failure enabled, an explicit transaction runs inside the context's execution strategy** (`CreateExecutionStrategy().ExecuteAsync`), because the whole unit is retried, not a single statement.
 - **Paging uses `OrderBy` on a stable key** before `Skip`/`Take`.
 - **Queries that `Include` more than one collection use `AsSplitQuery()`** (or it is set as the default), to avoid the cartesian explosion of a single joined query.

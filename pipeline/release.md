@@ -2,7 +2,7 @@
 id: release
 scope: scoped
 severity: warning
-applies: all
+audience: all
 applies-to:
   - "**/*.yml"
   - "**/*.yaml"

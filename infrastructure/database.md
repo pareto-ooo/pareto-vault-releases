@@ -2,7 +2,7 @@
 id: database
 scope: scoped
 severity: warning
-applies: all
+audience: all
 schemaVersion: 1
 ---
 
@@ -129,7 +129,7 @@ Take the default type unless the reason for deviating can be named.
 
 ### Audit columns
 
-- **Every table has `created_at` and `updated_at`** (`DATETIMEOFFSET NOT NULL DEFAULT SYSUTCDATETIME()`), even when "we never update". Most tables also have `created_by` and `updated_by` (`UNIQUEIDENTIFIER`, nullable because migrations, scheduled jobs and queue-triggered functions have no user identity).
+- **Every table has `created_at` and `updated_at`** (`DATETIMEOFFSET NOT NULL DEFAULT SYSUTCDATETIME()`), even when "we never update". Most tables also have `created_by` and `updated_by` (`UNIQUEIDENTIFIER`, nullable because migrations, scheduled jobs and background workers have no user identity).
 - **The database default is the safety net, and the application is the day-to-day path.** The default covers a hand-written insert or a data migration. The application sets `updated_at` on every save, because the default only fires on insert.
 - **Raw SQL and bulk statements set `updated_at = SYSUTCDATETIME()` explicitly.** A trigger that stamps it is permitted but not the default, because it is one more object to maintain per table.
 - **Audit columns use one naming convention across all tables.** There is no `createdAt` here and `inserted_at` there.
@@ -190,7 +190,7 @@ CREATE INDEX idx_outbox_unpublished
 
 ### Transactions and bulk operations
 
-- **One unit of work is one transaction.** The idempotency claim (api.md) is the one exception: it commits on its own, before the unit of work. Any other second explicit transaction inside one use case is a design question first.
+- **One unit of work is one transaction.** The idempotency claim (`api`) is the one exception: it commits on its own, before the unit of work. Any other second explicit transaction inside one use case is a design question first.
 - **Paging uses an explicit order on a stable key** before skipping and taking.
 - **Bulk operations bypass the application's audit and event hooks.** They set audit values explicitly, and are never used when they would skip an aggregate invariant or an outbox event.
 

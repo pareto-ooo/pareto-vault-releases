@@ -2,7 +2,7 @@
 id: github-actions
 scope: scoped
 severity: warning
-applies: all
+audience: all
 applies-to:
   - "**/*.yml"
   - "**/*.yaml"
@@ -170,7 +170,7 @@ Reusable workflows (`on: workflow_call`) take the place of stage and job templat
 - **Language-specific.** How database migrations are produced and applied differs per project and is described in the coding standards of that language. The rules below hold for all of them.
 - **Migrations are built once, with the application.** The migration artifact (a bundle or script) is built in the build job from the same commit as the application and published with it, so the schema the code expects and the migrations that produce it cannot drift apart. The deploy job only consumes it.
 - **The pipeline applies migrations, never the application.** A dedicated step in the deploy job applies them to the target database before the application is released, and a non-zero exit fails the job and halts the deploy. An app that migrates on startup races its own instances and couples schema changes to traffic.
-- **Migrations are backward compatible, so the release is not tightly coupled to the migration.** The previous release keeps serving while the migration runs and until the new one takes over, as the database standards require. A failed migration leaves the old release running.
+- **Migrations are backward compatible, so the release is not tightly coupled to the migration.** The previous release keeps serving while the migration runs and until the new one takes over, as the database standards (`database`) require. A failed migration leaves the old release running.
 - **Migrations authenticate with the workflow's federated identity** (Entra ID). No SQL passwords in the pipeline, ever.
 - **Migrations run as part of the environment's deployment**, in the environment's concurrency group, so two runs never migrate and deploy the same environment at the same time.
 - **A pipeline never drops or resets a database.**

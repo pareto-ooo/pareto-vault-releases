@@ -2,7 +2,7 @@
 id: local-development
 scope: global
 severity: warning
-applies: all
+audience: all
 schemaVersion: 1
 ---
 
@@ -43,7 +43,7 @@ How a developer runs an application on their laptop. The application, its toolch
 - **A C# project uses an Aspire AppHost,** also when the application is a single service. The AppHost is a project in `code/` and starts the application, its backing services and the Aspire dashboard.
 - **Other projects use a Compose file** run by Docker Compose, in `code/`.
 - **The deployable image runs locally.** Besides running from source for debugging, the application can be started from the same container definition the pipeline builds, so the image is exercised before it is deployed.
-- **Local orchestration never deploys.** The AppHost and the Compose file are for local development only. Deployment to Azure goes through Terraform and the Azure DevOps pipeline, never through the publish features of a local orchestrator.
+- **Local orchestration never deploys.** The AppHost and the Compose file are for local development only. Deployment to Azure goes through Terraform and the project's pipeline, never through the publish features of a local orchestrator.
 
 ## Configuration and secrets
 

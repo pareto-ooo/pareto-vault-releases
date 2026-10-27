@@ -2,7 +2,7 @@
 id: prototype
 scope: scoped
 severity: warning
-applies: all
+audience: all
 schemaVersion: 1
 ---
 

@@ -2,7 +2,7 @@
 id: api
 scope: scoped
 severity: warning
-applies: all
+audience: all
 applies-to:
   - "**/*.Api/**/*.cs"
   - "**/*Controller.cs"
@@ -56,7 +56,7 @@ NOTE: Current document is unreviewed, but will be used as ground truth for the t
 - **Header-based and date-based versioning are not used.** The version stays visible in logs, traces, caches and the address bar.
 - **Paths are plural `kebab-case` collections**: `/v1/customers`, `/v1/customers/{id}/orders`, `/v1/customer-tags`.
 - **No verbs in paths.** An action endpoint (`POST /v1/customers/{id}/archive`) is allowed sparingly, when the action is genuinely orthogonal to the resource lifecycle. Otherwise model it as a state change through PATCH.
-- **Internal endpoints live under `/internal/...`**, are unversioned, and are excluded from the public OpenAPI document. They serve the platform's own queue and timer triggered functions inside the same deployment boundary, and operations that a person runs, such as an owner running a GDPR erasure.
+- **Internal endpoints live under `/internal/...`**, are unversioned, and are excluded from the public OpenAPI document. They serve operations that a person runs, such as an owner running a GDPR erasure, and the background workers of the same deployment boundary where a worker needs one.
 
 ### Breaking and additive changes
 
@@ -230,7 +230,7 @@ All list endpoints share one query-parameter style, with `camelCase` names.
 
 - **Every state-changing POST accepts an `Idempotency-Key` header**, and so does every PATCH that is not naturally idempotent (incrementing a counter). GET, PUT and DELETE do not use one, because HTTP makes them idempotent.
 - **The key is opaque and client-generated**, a UUID (v4 or v7) of at most 128 characters, scoped to one logical user action. Retries reuse the same key. The server never parses its structure.
-- **The server stores one row per key**: `scope`, `idempotency_key`, `request_hash`, `status`, `locked_until`, `response_snapshot`, `expires_at`, and the audit columns that database.md requires.
+- **The server stores one row per key**: `scope`, `idempotency_key`, `request_hash`, `status`, `locked_until`, `response_snapshot`, `expires_at`, and the audit columns that `database` requires.
 - **The scope is the endpoint (`POST:/v1/customers`) and, on an authenticated endpoint, the caller's identity** (the token's `oid`), so endpoints and users never collide on a client key. A stored response is only ever replayed to the caller that stored it.
 - **The claim commits before the work.** The server saves the key with status `in_progress` and a `locked_until` (default 60 seconds) in its own short transaction, so a concurrent request can see it. The use case then saves the state change and the response snapshot in its one unit of work. A claim past `locked_until` may be taken over, so a crash never blocks a key until it expires.
 - **Replay behaviour is fixed.**

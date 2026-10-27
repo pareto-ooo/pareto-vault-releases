@@ -1,10 +1,10 @@
 ## architecture
 - `architecture/business-capabilities.md` — how projects use the Business Capability Model: record impacted capabilities, reference BCM names, raise change requests, capability naming; used when defining a project's scope or proposing a capability
-- `architecture/default-stack.md` — default stack for custom-built applications: Vue on @pareto4/ui-vue, C#/.NET, App Service, hosted services, Azure SQL or Cosmos DB, Service Bus, central and Exchange mail, Application Insights with OpenTelemetry, and which deviations block; used when starting or analysing any application project
-- `architecture/deviations.md` — [cross-cutting] how to deviate from a principle or standard: record it, who signs off, security approvers, easy-to-reverse deviations continue, hard-to-reverse ones block the affected work; used when any choice goes against the vault
+- `architecture/default-stack.md` — default stack for custom-built apps: Vue on @pareto4/ui-vue, C#/.NET on App Service, hosted services, Azure SQL or Cosmos DB, Service Bus, Application Insights; used when starting or analysing an application
+- `architecture/deviations.md` — [cross-cutting] how to deviate from a principle or standard: record it, who signs off, security approvers, which deviations block the affected work; used when any choice goes against the vault
 - `architecture/integration.md` — in-house integration rules: source of truth, API Management exposure, sync or async, decoupling, business keys, failures, monitoring, documentation; used when planning any integration between systems
 - `architecture/principles.md` — generic enterprise architecture principles: PACE application layers, business, information and technical principles, architecture models; used when starting a project or making any design or technology decision
-- `architecture/saas.md` — selecting and implementing bought SaaS applications: SaaS before PaaS before IaaS, selection, Entra ID sign-on, data ownership, central customer mail, SLA and compliance; used when the reuse-buy-build choice leads to buying an application
+- `architecture/saas.md` — buying SaaS applications: SaaS before PaaS before IaaS, selection, Entra ID sign-on, data ownership, customer mail, SLA and compliance; used when the reuse-buy-build choice leads to buying an application
 - `architecture/technology-choices.md` — choosing services and technologies: reuse before buy before build, Microsoft first, managed over self-hosted, selection criteria, LTS and versions; used when planning which services a workload is built on
 
 ## business
@@ -12,15 +12,15 @@
 
 ## code-standards
 - `code-standards/coding-standards-all-languages.md` — ground-truth principles for all code: philosophy, change discipline, layered architecture, naming, comments, code smells, errors and testing; used when planning or writing code in any language
-- `code-standards/coding-standards-csharp.md` — Backend coding standards: C#/.NET specifics: stack, file layout, async, DI, logging, mappers, time and money, EF Core entities, repositories and migrations; used when planning or writing C# code or EF Core data access
-- `code-standards/coding-standards-sql.md` — SQL specifics: uppercase keywords, PascalCase aliases, explicit columns, left-aligned layout with leading commas, joins, grouping without DISTINCT or UNION, CASE, CTEs over subqueries; used when writing or reviewing any SQL query, view or notebook
+- `code-standards/coding-standards-csharp.md` — C#/.NET specifics: stack, file layout, async, DI, logging, mappers, time and money, EF Core entities, repositories and migrations; used when planning or writing C# code or EF Core data access
+- `code-standards/coding-standards-sql.md` — SQL style: uppercase keywords, PascalCase aliases, explicit columns, leading commas, joins, no DISTINCT or UNION for grouping, CTEs over subqueries; used when writing or reviewing any SQL query or view
 - `code-standards/coding-standards-vuejs.md` — Vue 3 + TypeScript: script setup, @pareto4/ui-vue, local state before Pinia, routing, screen patterns, API access, definition of done; used when planning or writing Vue or TypeScript frontend code
 - `code-standards/source-control.md` — Conventional Commits, branch naming, pull request and squash-merge rules, SemVer releases as tags on main; used when planning commits, branches, pull requests or a version bump
 
 ## infrastructure
 - `infrastructure/api.md` — HTTP API rules: auth per operation, DTOs, routes and versioning, enum names, problem+json errors, paging, idempotency, rate limits, operator endpoints, OpenAPI; used when planning or reviewing HTTP endpoints
 - `infrastructure/containers.md` — placeholder container security rules: multi-stage, minimal pinned base, non-root, scanned and commit-tagged images; used when planning Dockerfiles or container build and deploy changes
-- `infrastructure/database.md` — draft language-neutral database rules: one database per app, GUIDv7 ids, audit columns, concurrency, enums, indexes, migrations, Cosmos DB; used when planning schema, persistence or migration work
+- `infrastructure/database.md` — draft language-neutral database rules: one database per app, GUIDv4 ids (v7 for large tables), audit columns, concurrency, enums, indexes, migrations, Cosmos DB; used when planning schema or persistence work
 - `infrastructure/governance.md` — Cloud Governance Policy as infrastructure rules: tenants and subscriptions, tags, identity, network, data protection, logging, backup, cost; used when planning any Azure resource or landing-zone change
 - `infrastructure/inter-service-communication.md` — choosing HTTP vs Service Bus between apps: no call by default, queries vs facts, caller timeouts and fallback, ID-only versioned events, RBAC on topics; used when planning a cross-app call or event
 - `infrastructure/naming.md` — [cross-cutting] Azure resource naming convention: components, formats per resource type, security groups, restricted names, stable names; used when planning new Azure resources to decide how each is named
@@ -38,7 +38,7 @@
 - `security/security.md` — security principles and rules for authentication, authorization and role recovery, TLS, secrets, cryptography, Azure, input handling, logging and supply chain; used when planning any security-sensitive work or a review
 
 ## root
-- `local-development.md` — local development in containers: Docker Desktop, a dev container per repository, the .NET SDK exception, emulated backing services, Aspire AppHost for C# and Compose otherwise, one start command, the developer's own Entra login, seed data; used when setting up or changing how a project runs on a laptop
-- `project-folder-layout.md` — [cross-cutting] top-level repository layout: code/, infrastructure/, pipeline/, docs/, what may live at the root, tool configuration and migrations placement; used when creating a repository or deciding where a new file or folder goes
+- `local-development.md` — local development in containers: Docker Desktop, a dev container per repo, emulated services, Aspire or Compose, one start command, own Entra login, seed data; used when setting up how a project runs on a laptop
+- `project-folder-layout.md` — [cross-cutting] top-level repository layout: code/, infrastructure/, pipeline/, docs/, what may live at the root, tool configuration and migrations; used when creating a repository or deciding where a new file goes
 - `project-records.md` — [cross-cutting] where a project records what the vault asks: project definition, client substitutions, build readiness, decision records, data register; used when any rule asks a project to record something
 - `prototype.md` — throwaway discovery prototypes on @pareto4/ui-vue: output, language, styling, layout, interaction level, sample data; used when planning discovery-phase mockups, never for the real build

@@ -2,7 +2,7 @@
 id: coding-standards-sql
 scope: scoped
 severity: warning
-applies: all
+audience: all
 applies-to:
   - "**/*.sql"
 schemaVersion: 1
@@ -10,7 +10,7 @@ schemaVersion: 1
 
 # Coding standards: SQL
 
-The SQL specifics on top of the coding standards for all languages, which are not repeated here. These rules apply to every hand-written SQL statement: queries, views, stored procedures, integration and data platform notebooks. SQL embedded in C# is covered through the C# standard's raw SQL rule. Schema design and migrations are out of scope.
+The SQL specifics on top of the coding standards for all languages (`coding-standards-all-languages`), which are not repeated here. These rules apply to every hand-written SQL statement: queries, views, stored procedures, integration and data platform notebooks. SQL embedded in C# is covered through the C# standard's raw SQL rule. Schema design and migrations are out of scope.
 
 ## SQL Philosophy
 

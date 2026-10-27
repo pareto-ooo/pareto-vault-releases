@@ -2,7 +2,7 @@
 id: governance
 scope: scoped
 severity: critical
-applies: all
+audience: all
 applies-to:
   - "**/*.tf"
   - "**/*.hcl"

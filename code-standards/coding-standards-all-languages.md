@@ -2,7 +2,7 @@
 id: coding-standards-all-languages
 scope: global
 severity: warning
-applies: all
+audience: all
 schemaVersion: 1
 ---
 
@@ -110,7 +110,7 @@ Code smells as described in Clean Code (Robert C. Martin) are a good guideline t
 - **Isolated and repeatable.** No reliance on shared external state or side effects like reading the system clock. A test that needs a database or other backing service gets its own throwaway instance (a container or the provider's emulator), never a shared one. Tests use data they control or that is seeded for them.
 - **Run Tests in their layer.** Domain tests cover domain classes; Application layer tests should not count toward Domain coverage.
 - **Prefer focused unit tests over broad integration tests.** Small accurate unit tests for most code.
-- **Arrange-Act-Assert format.** Add a comment between each step in a test. This is for readability.
+- **Arrange-Act-Assert format.** Add a comment between each step in a test. This is for readability, and the one exception to "No comments by default".
 - **Naming:** `MethodName_StateUnderTest_ExpectedBehavior`.
 - **Don't write brittle tests.** Tests based on string related checks, or tests based on reflection are discouraged.
 - **Exception testing**, exceptions are validated through type and included data values, not the exception message.

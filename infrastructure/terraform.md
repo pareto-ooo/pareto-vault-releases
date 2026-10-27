@@ -2,7 +2,7 @@
 id: terraform
 scope: scoped
 severity: warning
-applies: all
+audience: all
 applies-to:
   - "**/*.tf"
   - "**/*.hcl"
@@ -11,7 +11,7 @@ schemaVersion: 1
 
 # Infrastructure standards: Terraform and Terragrunt
 
-How we build infrastructure as code. These are the ground truth rules for all Terraform modules, Terragrunt configuration and remote state in a repository. How the infrastructure is validated and deployed is described in the pipeline standards and not repeated here.
+How we build infrastructure as code. These are the ground truth rules for all Terraform modules, Terragrunt configuration and remote state in a repository. How the infrastructure is validated and deployed is described in the pipeline standards (`azure-devops`, `github-actions`) and not repeated here.
 
 ## Infrastructure philosophy
 
@@ -109,7 +109,7 @@ Configuration has three levels, and only three.
 - **The pipeline requires the backend to exist** (`--backend-require-bootstrap`). It never lets Terragrunt create one (`--backend-bootstrap`).
 - **State is protected.** Blob versioning, soft delete and a delete lock on every state account, because state has no backup anywhere else.
 - **State accounts are locked down.** Public blob access disabled, HTTPS only and TLS 1.2 minimum on every state account.
-- **State accounts are named `st<app>tf<company><env>`.** This follows the storage account format of the naming convention, with `tf` marking the account as Terraform state, so every app repo derives the same kind of name.
+- **State accounts are named `st<app>tf<company><env>`.** This follows the storage account format of the naming convention (`naming`), with `tf` marking the account as Terraform state, so every app repo derives the same kind of name.
 - **State access uses Entra ID.** OIDC and Azure AD auth for the backend; shared-key access is disabled on state accounts.
 - **Role assignments are requested, not applied.** The bootstrap script prints the role assignments the pipeline identity needs; a delegated admin applies them.
 
@@ -127,7 +127,7 @@ Data that cannot be recovered once deleted (databases, state accounts) has two g
 
 ## Naming and stable values
 
-- **Names follow the Azure naming convention.**
+- **Names follow the Azure naming convention** (`naming`).
 - **Name length limits are validated in the module.** A module that builds a name for a type with a short maximum length validates the length, so a too-long name fails at plan instead of at apply.
 
 ## Terraform names
@@ -151,8 +151,8 @@ Names inside the code follow the Terraform best practices referenced by the Clou
 
 ## Authentication
 
-- **Terraform authenticates through the pipeline's Workload Identity Federation service connection** with OIDC, using the `ARM_*` environment variables. No client secrets.
-- **Long runs refresh their own token.** The service connection id is passed to the provider, so an apply that outlives the short-lived OIDC token requests a new one instead of failing halfway.
+- **Terraform authenticates through the pipeline's federated identity** with OIDC (a workload identity federation service connection on Azure DevOps, a federated credential on GitHub), using the `ARM_*` environment variables. No client secrets.
+- **Long runs refresh their own token.** An apply that outlives the short-lived OIDC token requests a new one instead of failing halfway: on Azure DevOps the service connection id is passed to the provider for this, on GitHub the provider requests it from the Actions token endpoint.
 
 ## Validation
 
@@ -162,7 +162,7 @@ Names inside the code follow the Terraform best practices referenced by the Clou
 
 ## Applying
 
-- **Apply re-plans.** Infrastructure is the exception to "deploy the published artifact" in the pipeline standards. Apply runs `run --all apply` against the current state instead of a saved plan, because a saved plan goes stale whenever mocks were used, resources were destroyed, or a new dependency was introduced.
+- **Apply re-plans.** Infrastructure is the exception to "deploy the published artifact" in the pipeline standards (`azure-devops`, `github-actions`). Apply runs `run --all apply` against the current state instead of a saved plan, because a saved plan goes stale whenever mocks were used, resources were destroyed, or a new dependency was introduced.
 - **The plan stage is for review.** Its output is published so the reviewer can read it before approving the apply stage.
 - **Validate and plan run locally, apply only from the pipeline.** A developer may validate and plan against an environment from a workstation; changes are only applied by the pipeline.
 

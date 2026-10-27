@@ -2,7 +2,7 @@
 id: source-control
 scope: global
 severity: warning
-applies: all
+audience: all
 schemaVersion: 1
 ---
 
@@ -19,7 +19,7 @@ How we commit, branch, review and version. Commits follow Conventional Commits 1
 - **Footers use git-trailer form**: `Refs: #12345`, `Reviewed-by: Name`. Tokens use hyphens instead of spaces.
 - **One commit holds one type of change.** If it would need two types, split it into two commits.
 - **A commit is small and complete.** Every commit on `main` builds and its tests pass. On a branch, a test-first commit with a deliberately failing test is allowed when its description says so (`test(billing): add failing vat rounding case`).
-- **Rewriting history is never allowed.** A wrong type or message is fixed by a correcting commit. This is enforced by branch policies. As a result there is no ability to rebase.
+- **History on `main` and other shared branches is never rewritten.** A wrong type or message that reached `main` is fixed by a correcting commit, and the branch rules block force-pushes there. A personal branch may be rebased or squashed before review; a pull request lands by squash merge (below).
 
 ### Types
 
@@ -58,7 +58,7 @@ A revert is a `revert` type, with a `Refs:` footer listing the reverted commit h
 - **(ISO27001) A PR needs a passing pipeline and a review before it merges.** The author does not merge their own unreviewed changes, and cannot approve their own PR. A team of one person cannot meet this. It works under a recorded and signed deviation whose compensating controls are a recorded assistant review and vault review on every PR, and required checks that pass before the author merges.
 - **Reviewers check the commit type against the change.** A `fix` that adds behavior, or a missing `!` on a breaking change, is a review finding.
 - **Merge by squash**, keeping `main` one commit per PR, unless the individual commits are each worth keeping.
-- **Delete a branch after it is merged.** By default only your own branches can be deleted, usually this is automatically done through the Dev-Ops PR system with auto-complete enabled.
+- **Delete a branch after it is merged.** By default only your own branches can be deleted; usually the platform does it on merge (auto-complete on Azure DevOps, automatic branch deletion on GitHub).
 
 ## Versioning
 

@@ -2,7 +2,7 @@
 id: coding-standards-vuejs
 scope: scoped
 severity: warning
-applies: all
+audience: all
 applies-to:
   - "**/*.vue"
   - "**/*.ts"
@@ -11,7 +11,7 @@ schemaVersion: 1
 
 # Coding standards: Vue.js
 
-The Vue.js and TypeScript specifics on top of the coding standards for all languages, which are not repeated here. Both always apply together.
+The Vue.js and TypeScript specifics on top of the coding standards for all languages (`coding-standards-all-languages`), which are not repeated here. Both always apply together.
 
 A `TODO(team)` marker is an open project decision. An AI assistant never fills one in itself. It asks.
 
@@ -138,6 +138,7 @@ export type ApiErrorCode =
   | 'forbidden' // 403
   | 'not-found' // 404
   | 'conflict' // 409
+  | 'rate-limited' // 429
   | 'validation' // 400 or 422 with field errors
   | 'server' // 5xx
   | 'unexpected' // anything else
@@ -553,7 +554,7 @@ The defaults for how screens are laid out and how they talk to the user. A proje
 - **API clients return the response interfaces as they are.** A mapper exists only when a screen needs a different shape. It is a plain function in the feature's `api/` folder.
 - **Every request is cancellable.** The caller that starts the work owns the `AbortController`: a screen's param watcher or a composable. It passes the `signal` through the action to the API client, and aborts it in `onWatcherCleanup` or `onScopeDispose`.
 - **Every request has a timeout.** The HTTP core combines the caller's signal with a timeout signal (`AbortSignal.any`). A hung request is an error, not an endless spinner.
-- **Retries live only in the HTTP core**, for idempotent methods and for a `POST` with an `Idempotency-Key`. A 4xx response is never retried, except `409 IDEMPOTENCY_REQUEST_IN_FLIGHT`: the core retries it with the same key, at most twice, after the `Retry-After` delay.
+- **Retries live only in the HTTP core**, for idempotent methods and for a `POST` or `PATCH` with an `Idempotency-Key`. A 4xx response is never retried, except `409 IDEMPOTENCY_REQUEST_IN_FLIGHT` and `429`: the core retries them with the same key, at most twice, after the `Retry-After` delay. A request the core may not retry, or a 429 still limited after the retries, rejects as `rate-limited`.
 - **Components never `try`/`catch` an API call**, and never branch on a status code or message text. They render the `RequestState` and branch on `error.code`.
 - **No floating promises.** Every promise is awaited or explicitly handled (`@typescript-eslint/no-floating-promises`). A promise that is deliberately not awaited is marked with `void`. That is safe for actions, because they never reject. The lint rule does not check templates, so a template handler calls a named function, never an inline promise chain.
 - **Top-level `await` in `<script setup>` is banned.** It makes the component async and requires `<Suspense>`. Data is loaded by an action or composable, and the template renders its `RequestState`.

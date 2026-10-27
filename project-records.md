@@ -2,7 +2,7 @@
 id: project-records
 scope: global
 severity: critical
-applies: all
+audience: all
 schemaVersion: 1
 ---
 
@@ -27,7 +27,7 @@ The project definition is the single document that states what the project is an
 | Fact | Asked for by | Must exist |
 |---|---|---|
 | Purpose, users and scope (in and out) | this standard | before design |
-| PACE layer and business criticality | `architecture-principles` | before design |
+| PACE layer and business criticality | `principles` | before design |
 | Impacted capabilities (L2 or L3; innovating layer exempt) | `business-capabilities` | before design |
 | Organisation substitutions, client projects only (see below) | this standard | before design |
 | Compliance frameworks that apply, and the controller or processor role per app | `compliance` | before design |
@@ -49,7 +49,7 @@ The vault is written for Pareto's own organisation. On a client project, whereve
 - the compliance frameworks, and whether Pareto or the client is the controller;
 - the central mail delivery service.
 
-A document whose `applies` field is `internal` is skipped on a client project, not substituted.
+A document whose `audience` field is `internal` is skipped on a client project, not substituted.
 
 ## Readiness before build
 

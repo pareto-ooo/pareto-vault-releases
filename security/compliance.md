@@ -2,7 +2,7 @@
 id: compliance
 scope: global
 severity: critical
-applies: all
+audience: all
 schemaVersion: 1
 ---
 
@@ -153,7 +153,7 @@ A person can ask for access, rectification, erasure, restriction, portability an
 - **(GDPR) Retention periods are written next to the data model**, so a new column cannot be added without choosing one.
 - **(GDPR) A legal retention duty overrides an erasure request** for the data it covers, and only for that data. Everything else is erased. The retained data is restricted to the legal purpose and is not used for anything else. The person is told what is kept and why, and the data is erased when its period ends. (Art. 17(3)(b))
 - **(GDPR) Evidence for legal claims is a narrower ground.** Contracts and documents kept only as evidence may be kept against an erasure request, but only while a claim is plausible and for as long as the documented reason holds. A challenged request goes to the privacy owner before it is refused. (Art. 17(3)(e))
-- **(Dutch law) Financial records, signed contract, and signed documents are kept for minimum 7 full financial years after they stop being current.** This means documents of that type are essentially kept forever. The policy is to have open-ended storage for this type of document and those should never expire or be excluded from backups. We have a legal duty to keep them.
+- **(Dutch law) Financial records, signed contract, and signed documents are kept for 7 full financial years after they stop being current, then erased by the retention mechanism.** That makes them ordinary data with a long retention period, not records kept forever. Until then they are excluded from erasure requests and stay in backups, because we have a legal duty to keep them.
 - **The audit stream is kept at least two years, then purged.** A scheduled job removes older audit entries because of their size. Application logs default to 30 days.
 - **Backups follow the business criticality, at the lowest cost that meets the recovery objectives.** The platform's default backups are the starting point, and every step up is paid for only when the recovery time and recovery point objectives need it:
 
@@ -211,7 +211,7 @@ A person can ask for access, rectification, erasure, restriction, portability an
 
 The company works to ISO/IEC 27001. This vault only holds what affects how a project is developed and operated. Organisation-level parts of the standard (management commitment, policy, internal audit, management review, physical and HR security) are owned elsewhere and deliberately absent here.
 
-This chapter holds the ISO philosophy and the development-process rules. Rules marked (ISO27001) are never relaxed (see Marking). A risk acceptance, where one is allowed, is made as described under Risk handling in development.
+This chapter holds the ISO philosophy and the development-process rules. Rules marked (ISO27001) are never relaxed (see Marked rules). A risk acceptance, where one is allowed, is made as described under Risk handling in development.
 
 ### Philosophy
 

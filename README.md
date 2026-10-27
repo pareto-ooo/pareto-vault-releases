@@ -9,7 +9,7 @@ pp-core reads this folder at various moments during discovery, and planning of a
 ## Ownership and cadence
 
 - **Owners:** **TODO:** name the vault owners.
-- **Reviewer:** the vault owners (enforced through ADO branch policies).
+- **Reviewer:** the vault owners, on every pull request. The repository's GitHub plan has no branch protection, so this is agreed practice, not an enforced rule.
 - **Cadence:** as-needed. A vault PR is not gated by platform releases.
 
 ## How changes propagate to consumers
@@ -48,9 +48,15 @@ An agent may be given one document without the others, so each document has to m
 
 ### The `header` block
 
-The header block in each file contains some basic information like a version and how important it is. The documentation for what is expected lives in pp-core.
+The header block in each file contains some basic information about the document:
+- `id`: the document id. Other documents cite a document by this id, in backticks.
+- `scope`: `global` for a document that applies to any work, `scoped` for one that applies to certain files, which `applies-to` lists as globs.
+- `severity`: how much weight the document carries: `info`, `warning` or `critical`.
+- `schemaVersion`: the version of this header shape, currently `1`.
 
-`applies` says which projects the document is for:
+pp-core (1.20.0) reads none of these fields: it chooses documents from `INDEX.md`. The fields are for readers and for future tooling, so keep them accurate anyway.
+
+`audience` says which projects the document is for:
 - `all`: every project. On a client project, where the document names Pareto's own setup (tenant, company token, identity provider, capability model, compliance role, mail service), the client's takes its place, and the project records each substitution as `project-records.md` describes.
 - `internal`: internal Pareto projects only. A client project skips the document, and an open TODO in it is not a gap for that project.
 
@@ -62,22 +68,18 @@ The header block in each file contains some basic information like a version and
 2. One line per document: `` - `<path from vault root>` — <what it covers>; <helps decide which choice> ``. The separator is an em dash with a space on each side.
 3. Describe the decision the document informs, not just its subject. Sessions match their topics against these words.
 4. Keep each line under 250 characters.
-5. List every pattern document. Leave out `README.md`, `BACKLOG.md` and `INDEX.md` itself.
-6. Legacy folder gets excluded from the `INDEX.md` as well.
-7. Paths are relative to the vault root: no leading `/`, no `..`.
-8. Start the description with `[cross-cutting]` when the document holds rules every decision answers to, whatever its topic: who approves what, naming, where files go. pp-core's Discovery Sprint reads every cross-cutting document in every session, on top of the documents it picks by topic, so keep the mark to short documents whose rules a session could break without any of its topics naming them.
+5. List every pattern document. Leave out `README.md` and `INDEX.md` itself.
+6. Paths are relative to the vault root: no leading `/`, no `..`.
+7. Start the description with `[cross-cutting]` when the document holds rules every decision answers to, whatever its topic: who approves what, naming, where files go. pp-core's Discovery Sprint reads every cross-cutting document in every session, on top of the documents it picks by topic, so keep the mark to short documents whose rules a session could break without any of its topics naming them.
 
 The closing clause (`used when planning …`) is written from the planner's point of view: it says in which kind of work the document should be read, judged from the document's content. A coding-standards document says it applies when planning or writing code; a security document names the security-sensitive work it covers. Do not give a document a clause its content does not support.
 
 Example from the current index:
 
 ```markdown
-## db
-- `db/soft-delete.md` — hard delete by default and when soft delete is justified; used when planning delete, archive or retention behavior to decide whether rows vanish or are flagged
+## infrastructure
+- `infrastructure/database.md` — draft language-neutral database rules: one database per app, GUIDv4 ids (v7 for large tables), audit columns, concurrency, enums, indexes, migrations, Cosmos DB; used when planning schema or persistence work
 
-## security
-- `security/secrets.md` — Key Vault per app per env, narrow RBAC, no rotation code; used when planning anything needing credentials, connection strings or API keys
-
-## practices
-- `practices/` — machine-readable one-rule-per-file practices pp-core matches against planned files and injects into PLAN.md; used automatically at plan time and never chosen manually
+## root
+- `project-folder-layout.md` — [cross-cutting] top-level repository layout: code/, infrastructure/, pipeline/, docs/, what may live at the root, tool configuration and migrations; used when creating a repository or deciding where a new file goes
 ```

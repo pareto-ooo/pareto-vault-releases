@@ -1,8 +1,8 @@
 ---
-id: business-company
+id: company
 scope: global
 severity: info
-applies: internal
+audience: internal
 schemaVersion: 1
 ---
 

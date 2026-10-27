@@ -2,7 +2,7 @@
 id: quality-gates
 scope: scoped
 severity: warning
-applies: all
+audience: all
 applies-to:
   - "**/*.yml"
   - "**/*.yaml"
@@ -24,10 +24,10 @@ The checks a change must pass before it is merged.
 ## Quality gate
 
 - **The code builds and all tests pass.**
-- **SonarQube Cloud (SonarCloud) analyses every pull request.** The analysis runs in the pull request pipeline of the code it analyses, through the SonarCloud tasks (prepare, analyse, publish) around the build and test steps, and its result is published to the pull request.
+- **SonarQube Cloud (SonarCloud) analyses every pull request.** The analysis runs in the pull request pipeline of the code it analyses, with the SonarCloud scanner wrapped around the build and test steps, and its result is published to the pull request.
 - **The SonarCloud quality gate must pass.** A failed quality gate blocks the merge. The quality gate covers new code: coverage, duplication, maintainability, reliability and security issues.
 - **Coverage is reported to SonarCloud.** Test coverage is collected during the test run and imported by the analysis, so the coverage condition in the quality gate is measured on the pull request.
-- **The SonarCloud quality gate matches the coding standards.** The coverage threshold in the quality gate is the threshold from the coding standards; a project does not lower it on its own.
+- **The SonarCloud quality gate matches the coding standards.** The coverage threshold in the quality gate is the threshold from the coding standards (`coding-standards-all-languages`); a project does not lower it on its own.
 - **Exclusions are deliberate.** Generated code and data objects are excluded from coverage, in line with the coding standards; every other exclusion is a reviewed choice in the SonarCloud project settings.
 
 ## Security gate

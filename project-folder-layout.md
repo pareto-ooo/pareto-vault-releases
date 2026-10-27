@@ -2,7 +2,7 @@
 id: project-folder-layout
 scope: global
 severity: critical
-applies: all
+audience: all
 schemaVersion: 1
 ---
 

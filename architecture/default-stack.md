@@ -2,7 +2,7 @@
 id: default-stack
 scope: global
 severity: warning
-applies: all
+audience: all
 schemaVersion: 1
 ---
 
