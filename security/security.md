@@ -162,7 +162,7 @@ Rules that only hold on our Microsoft Azure platform. The general rules in the o
 
 - **Size cap, and an allow-list of types.** The expected types are finite, everything else is rejected.
 - **Verify content, not just the declared type.** Check magic bytes.
-- **Scan for malware** any file that leaves the trust boundary (forwarded to a third party or downloaded by another user). //TODO is this viable?
+- **Scan for malware** any file that leaves the trust boundary (forwarded to a third party or downloaded by another user). The upload lands in a quarantine container, Microsoft Defender for Storage scans it on upload, and the file is released only after a clean result. A malicious file is deleted and the event goes to the audit stream.
 - **Store in blob storage with generated names.** Never use the client-supplied file name for storage, and never write uploads to local disk beyond the request lifetime.
 
 ### Events and messages
@@ -188,7 +188,7 @@ Rules that only hold on our Microsoft Azure platform. The general rules in the o
 
 ## Dependencies and supply chain
 
-- **(Software Governance) Packages come only from official registries** (NuGet, npm, PyPI, or the company's approved feed). Never from a third-party site, a downloaded binary, a link, a raw git address or a tarball. Package sources are configured explicitly in the repository, so a restore cannot silently pull from anywhere else, and unauthorised ways of retrieving software are blocked. The same holds for container base images: official publishers only.
+- **(Software Governance) Packages come only from official registries** (NuGet, npm, PyPI). There is no internal package feed: integrity comes from the content hashes below. A client project that has its own feed uses it as a substitution (`project-records`). Never from a third-party site, a downloaded binary, a link, a raw git address or a tarball. Package sources are configured explicitly in the repository, so a restore cannot silently pull from anywhere else, and unauthorised ways of retrieving software are blocked. The same holds for container base images: official publishers only.
 - **(Software Governance) Integrity is verified.** Signed packages are verified where the ecosystem supports signatures, and the lockfile pins a content hash (SHA-256 or stronger) that is checked on every restore. A mismatch fails the build. MD5 is not an integrity check.
 - **(Software Governance) Versions are controlled.** Versions are pinned or tightly bounded by semantic versioning, never `latest` or an open range, and lockfiles are committed, with lockfile changes matching the dependency change in scope.
 - **(Software Governance) Patch and minor updates are applied promptly**, as a change that contains only the dependency update with the tests run, so it is easy to roll back. **Major upgrades are planned**: follow the maintainers' upgrade instructions, keep the change isolated from the regular flow, and validate it in a dedicated acceptance environment before production.

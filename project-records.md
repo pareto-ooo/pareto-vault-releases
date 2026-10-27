@@ -53,7 +53,8 @@ The vault is written for Pareto's own organisation. On a client project, whereve
 - the identity provider for the client's employees;
 - the business capability model, or that the client has none;
 - the compliance frameworks, and whether Pareto or the client is the controller;
-- the central mail delivery service.
+- the central mail delivery service;
+- the package feed, where the client has one.
 
 A document whose `audience` field is `internal` is skipped on a client project, not substituted.
 

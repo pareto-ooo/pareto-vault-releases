@@ -153,7 +153,10 @@ Take the default type unless the reason for deviating can be named.
 ### Index maintenance
 
 - **Rebuilding or reorganizing an index is a measured fix, not a routine ritual.** `sys.dm_db_index_physical_stats` finds fragmentation, and a rebuild is `ALTER INDEX ... REBUILD WITH (ONLINE = ON)` or `REORGANIZE`.
-- **TODO:** Define scheduled index maintenance: rebuild or reorganize and statistics updates and how this is owned and monitored.
+- **There is no scheduled index rebuild by default.** On Azure SQL fragmentation rarely costs measurable performance, and a rebuild costs log and I/O capacity.
+- **Statistics stay current automatically.** Automatic statistics creation and update stay on, and Azure SQL automatic tuning keeps forcing the last good plan.
+- **Tables expected to pass about a million rows get a weekly statistics update,** the same threshold as GUIDv7. It runs as a singleton hosted service of the app, under a lease (`app-service`), and records its outcome like any background work (`observability`).
+- **The workload team owns its database maintenance.**
 
 ### Outbox table
 

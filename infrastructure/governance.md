@@ -20,7 +20,7 @@ How our cloud governance translates into infrastructure code: tenants and subscr
 
 ## Tenants and subscriptions
 
-- **Everything is deployed in the main Pareto tenant.** A workload that needs full isolation is deployed in a separate tenant, and nothing is shared between the two. **TODO:** confirm which workloads, if any, run in a separate tenant.
+- **Everything is deployed in the main Pareto tenant.** No workload runs in a separate tenant by default. The one standing exception is the external tenant for external users (`authentication`). Any other separate tenant is a deviation (`deviations`), for a workload that needs full isolation, and nothing is shared between the two.
 - **Production and non-production never share a subscription.** The production environment has its own subscription; non-production environments use dev/test subscriptions.
 - **Management groups are not managed by workload code.** The management group structure is set by the platform owners, and a workload never creates or moves management groups.
 
