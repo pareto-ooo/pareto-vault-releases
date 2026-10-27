@@ -51,6 +51,7 @@ Production availability follows the business criticality, as backups do (`compli
 
 - **Other services follow the same columns:** zone redundancy from `BusinessCritical` up, and a second region only for `MissionCritical`.
 - **The project definition may set a stricter target** for a workload, with the tiers that meet it. A lower target than its criticality gives is a deviation (`deviations`).
+- **The target covers normal operation.** A disaster such as the loss of a region is covered by the recovery time objective of `compliance` instead, which for `MissionCritical` is met by the failover to the second region.
 - **The target is measured,** by the availability tests (`observability`), and reviewed with the cost after go-live.
 
 ## Choosing a tier

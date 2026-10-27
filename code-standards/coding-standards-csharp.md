@@ -79,7 +79,7 @@ The C#/.NET specifics on top of the coding standards for all languages (`coding-
 - **Records for data.** DTOs, value objects and immutable domain shapes are records. `required` members plus named arguments turn a forgotten field into a compile error.
 - **The Domain project has zero framework package references.** No EF Core, no JSON attributes, no ASP.NET Core.
 - **Name encoding exceptions.** The `I` prefix for interfaces, and the `Async` suffix only when a non-async overload with the same name exists (`GetUser`, not `GetUserAsync`).
-- **XML `<summary>`** (controllers, request/response DTOs) because Swagger/OpenAPI is generated from it. It is API documentation, not comment smell.
+- **XML `<summary>` only where it tells the reader something the name does not.** OpenAPI is generated from it, so on controllers and request and response DTOs it is API documentation, and the doc-comment rule of `api` decides when one is written: a non-obvious behaviour (idempotency, an async 202 handle), or a member whose purpose its name does not convey. A summary that restates the name (`/// <summary>Gets the customer.</summary>` on `Get` of `CustomerController`) is noise and is left out. Most endpoints and DTO members need none.
 - **null-forgiving operator `!` is banned in code.** Two exceptions: the `= null!` initializer on an EF Core entity property, and test code.
 - **Not Found Exceptions** A repository method that may find nothing is a `Find` and returns a nullable object (`coding-standards-all-languages`, Get and Find). The service turns that into a not-found exception; a service does not return null.
 - **Required over Nullable** A data object should enforce with required instead of using nullable
