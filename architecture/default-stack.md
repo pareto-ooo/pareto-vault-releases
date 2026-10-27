@@ -60,4 +60,4 @@ The technologies every custom-built application starts from: its frontend, backe
 
 ## Telemetry
 
-- **Applications send telemetry to a workspace-based Application Insights resource,** instrumented through the Azure Monitor OpenTelemetry distribution. The same OpenTelemetry instrumentation feeds the Aspire dashboard during local development.
+- **Applications send telemetry to a workspace-based Application Insights resource,** instrumented through the Azure Monitor OpenTelemetry distribution. The same OpenTelemetry instrumentation feeds the Aspire dashboard during local development. What is collected, traced and alerted on follows `observability`.

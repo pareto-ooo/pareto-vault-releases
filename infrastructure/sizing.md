@@ -25,7 +25,7 @@ Every workload records its profile in the project definition before any tier is 
 - **Usage pattern.** Office hours, around the clock, or batch, and any known peaks (month end, campaigns, seasonal).
 - **Data.** Volume at go-live and expected growth per year.
 - **Performance targets.** Measurable targets, such as response time at a percentile, throughput, or the window a batch must finish in.
-- **Availability.** Derived from the workload's business criticality tag and its recovery time objective.
+- **Availability.** Derived from the workload's business criticality tag and its recovery time objective (see Availability by business criticality).
 
 ## Environment profiles
 
@@ -37,6 +37,21 @@ Every workload records its profile in the project definition before any tier is 
 
 - **Non-production never needs production availability.** Redundancy, high-availability options and long retention are production concerns, unless acceptance is used to test them.
 - **Non-production runs on dev/test pricing.** Non-production environments live in dev/test subscriptions, which have lower licence costs (Cloud Governance RM-03).
+
+## Availability by business criticality
+
+Production availability follows the business criticality, as backups do (`compliance`). Each step up is a floor on the tier, paid for only by workloads that need it.
+
+| Business criticality | Availability target per month | App Service | Azure SQL | Regions |
+|----------------------|-------------------------------|-------------|-----------|---------|
+| `NonCritical` | None agreed | One instance | Any tier; serverless with auto-pause allowed | One |
+| `BusinessSupport` | 99.5% | One instance | Any tier; no auto-pause in production | One |
+| `BusinessCritical` | 99.9% | At least two instances, zone redundant where the tier allows (`app-service`) | Zone redundant | One |
+| `MissionCritical` | 99.95% | At least two instances, zone redundant | Zone redundant, with a failover group to the paired region | Two: the second region can take over, and the failover is tested every year |
+
+- **Other services follow the same columns:** zone redundancy from `BusinessCritical` up, and a second region only for `MissionCritical`.
+- **The project definition may set a stricter target** for a workload, with the tiers that meet it. A lower target than its criticality gives is a deviation (`deviations`).
+- **The target is measured,** by the availability tests (`observability`), and reviewed with the cost after go-live.
 
 ## Choosing a tier
 

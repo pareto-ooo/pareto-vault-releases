@@ -35,6 +35,10 @@ The project definition is the single document that states what the project is an
 | Role holders and how to reach them: privacy owner, security owner, incident contact, architect who signs deviations, information security officer, IT director, enterprise architect. One person may hold several roles, and the record says so | `compliance`, `deviations` | before design, and before the first deviation |
 | Tenancy: single-tenant, or multi-tenant with how users belong to tenants | `security` | before design |
 | Error domain for problem `type` URIs | `api` | before the first error code appears in a response |
+| Languages the product ships and its default locale | `coding-standards-vuejs` | before design |
+| Accessibility law that applies (European Accessibility Act, public-sector rules) or none | `coding-standards-vuejs` | before design |
+| Changes to the standard test levels, and why | `testing-strategy` | before the first pipeline |
+| Support hours, for `BusinessCritical` workloads | `observability` | before go-live |
 | Workload profile | `sizing` | before any service tier is chosen |
 | Cost estimate per environment, and the performance test result for critical workloads | `sizing` | before the first deployment; the test result before go-live |
 | Promotion pattern (environment branches or tag promotion) | `release` | before the first pipeline |
@@ -74,6 +78,7 @@ Build starts when the project's requirement set answers each item below, or name
 
 | Record | Location | Holds | Must exist |
 |---|---|---|---|
+| Architecture overview | `docs/architecture.md` | a context and a container diagram (C4 levels 1 and 2), and the main flows between the containers | before the first deployment |
 | Decision records | `docs/decisions/NNNN-<slug>.md`, one file per decision, numbered in order | a decision that changes architecture, a contract, a data store, a security or compliance boundary, or the cost; every deviation, with the content `deviations` requires | when the decision is made, before the work that depends on it is merged |
 | Data register | `docs/data-register.md` | every data store and flow with its classification, the personal data in it, purpose, retention and location, including copies such as caches and report tables | before the first store of personal data is deployed |
 | Error catalog | `docs/error-catalog.md` | what `api` requires of each error code | before the first error code appears in a response |
@@ -82,6 +87,9 @@ Build starts when the project's requirement set answers each item below, or name
 | Known weaknesses | `docs/known-weaknesses.md` | each finding not fixed immediately, with what `compliance` requires of it | when the finding is not fixed immediately |
 | Runbooks | `docs/runbooks/<procedure>.md` | the trigger, the steps, how to roll back and whom to escalate to | before the first production deployment that needs the procedure |
 
+- **A decision record has a fixed shape:** title, status (`proposed`, `accepted`, or `superseded by NNNN`), date, context, decision and consequences, plus what `deviations` requires for a deviation. An accepted record is never edited except for its status; a changed decision is a new record that supersedes it.
+- **Diagrams are text.** Architecture, threat model and flow diagrams are Mermaid in the Markdown file, so they are reviewed in pull requests and cannot drift from an image nobody can edit. The architecture overview uses the C4 notation, and a threat model diagram (`compliance`) builds on its container diagram.
+- **The repository README is the entry point.** It says what the application is, how to run it locally (`local-development`), and links to the records in `docs/`.
 - **"Decision record" is the one term.** A decision log, an ADR or an architecture decision in any document of this vault means a decision record.
 - **Decisions taken in a Discovery Sprint stay where the sprint recorded them.** Their deviations are listed in the charter. Decision records start with the first decision after the charter is signed.
 

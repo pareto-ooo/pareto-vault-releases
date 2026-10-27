@@ -457,7 +457,7 @@ export function useDebouncedText(source: MaybeRefOrGetter<string>, delayMs: numb
 - **Directive shorthands always**: `:`, `@` and `#`.
 - **Components are PascalCase and self-closing in templates** (`<CustomerCard />`).
 - **Interactive elements are real elements.** `button` for actions, `RouterLink` or `a` for navigation. No click handlers on a `div` or `span`.
-- **User-facing text comes from vue-i18n** (`t('customers.search')`), also in an app with one language. This includes `aria-label`, `title` and `placeholder`. No hard-coded strings in templates.
+- **User-facing text comes from vue-i18n** (`t('customers.search')`), also in an app with one language. The languages an app ships and its default locale are recorded in the project definition (`project-records`). This includes `aria-label`, `title` and `placeholder`. No hard-coded strings in templates.
 - **No inline `style` attribute**, except for a value computed at runtime (a progress bar width).
 
 ## Composables
@@ -630,7 +630,9 @@ The rules below are enforced by lint or the compiler. Every other rule in this d
 
 ## Accessibility
 
-There is no formal WCAG level. These rules are the minimum every screen meets.
+- **Screens meet WCAG 2.2 level AA when a law requires it:** the European Accessibility Act for the products and services it covers, or the accessibility rules for public-sector bodies. The project definition records whether one applies (`project-records`). Where one does, the application is audited against WCAG 2.2 AA before go-live, every new screen gets a manual keyboard and screen-reader check, and the accessibility statement the law requires is published.
+- **Otherwise the rules below are the minimum** every screen meets. They hold in both cases.
+
 
 - **Every input has a label** (the kit's `label` prop), and every icon-only button a `title` or `aria-label`.
 - **Everything works with a keyboard.** Hover-only actions are banned.

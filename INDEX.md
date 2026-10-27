@@ -14,8 +14,9 @@
 - `code-standards/coding-standards-all-languages.md` — ground-truth principles for all code: philosophy, change discipline, layered architecture, naming, comments, code smells, errors and testing; used when planning or writing code in any language
 - `code-standards/coding-standards-csharp.md` — C#/.NET specifics: stack, file layout, async, DI, logging, mappers, time and money, EF Core entities, repositories and migrations; used when planning or writing C# code or EF Core data access
 - `code-standards/coding-standards-sql.md` — SQL style: uppercase keywords, PascalCase aliases, explicit columns, leading commas, joins, no DISTINCT or UNION for grouping, CTEs over subqueries; used when writing or reviewing any SQL query or view
-- `code-standards/coding-standards-vuejs.md` — Vue 3 + TypeScript: script setup, @pareto4/ui-vue, local state before Pinia, routing, screen patterns, API access, definition of done; used when planning or writing Vue or TypeScript frontend code
+- `code-standards/coding-standards-vuejs.md` — Vue 3 + TypeScript: script setup, @pareto4/ui-vue, Pinia, routing, screens, API access, i18n, accessibility (WCAG 2.2 AA where law requires), done; used when planning or writing Vue frontend code
 - `code-standards/source-control.md` — Conventional Commits, branch naming, pull request and squash-merge rules, SemVer releases as tags on main; used when planning commits, branches, pull requests or a version bump
+- `code-standards/testing-strategy.md` — test levels beyond the unit test: integration, contract (OpenAPI, event schemas), end-to-end, performance, acceptance, test environments and data; used when planning tests or a QA approach
 
 ## infrastructure
 - `infrastructure/api.md` — HTTP API rules: auth per operation, DTOs, routes and versioning, enum names, problem+json errors, paging, idempotency, rate limits, operator endpoints, OpenAPI; used when planning or reviewing HTTP endpoints
@@ -25,7 +26,8 @@
 - `infrastructure/governance.md` — Cloud Governance Policy as infrastructure rules: tenants and subscriptions, tags, identity, network, data protection, logging, backup, cost; used when planning any Azure resource or landing-zone change
 - `infrastructure/inter-service-communication.md` — choosing HTTP vs Service Bus between apps: no call by default, queries vs facts, timeouts and fallback, one event envelope, IDs only, RBAC on topics; used when planning a cross-app call or event
 - `infrastructure/naming.md` — [cross-cutting] Azure resource naming convention: components, formats per resource type, security groups, restricted names, stable names; used when planning new Azure resources to decide how each is named
-- `infrastructure/sizing.md` — sizing and cost rules: workload profile, environment profiles, tiers, cold starts, cost estimate, performance test, post-go-live review; used when choosing service tiers or estimating Azure costs per environment
+- `infrastructure/observability.md` — telemetry, W3C trace propagation from SPA to subscribers, sampling and ingestion caps, alerts by criticality, availability tests, dashboards; used when planning monitoring or alerts
+- `infrastructure/sizing.md` — sizing and cost rules: workload profile, environment profiles, availability and redundancy by criticality, tiers, cold starts, cost estimate, performance test; used when choosing service tiers or estimating costs
 - `infrastructure/terraform.md` — Terraform and Terragrunt rules: folder layout, units, configuration levels, access unit for role assignments, modules, remote state, deletion protection, applying; used when planning or writing infrastructure code
 
 ## pipeline
@@ -42,5 +44,5 @@
 ## root
 - `local-development.md` — local development in containers: Docker Desktop, a dev container per repo, emulated services, Aspire or Compose, one start command, own Entra login, seed data; used when setting up how a project runs on a laptop
 - `project-folder-layout.md` — [cross-cutting] top-level repository layout: code/, infrastructure/, pipeline/, docs/, what may live at the root, tool configuration and migrations; used when creating a repository or deciding where a new file goes
-- `project-records.md` — [cross-cutting] where a project records what the vault asks: project definition, client substitutions, build readiness, decision records, data register; used when any rule asks a project to record something
+- `project-records.md` — [cross-cutting] where a project records what the vault asks: project definition, client substitutions, build readiness, decision records, architecture overview, diagrams; used when any rule asks a project to record something
 - `prototype.md` — throwaway discovery prototypes on @pareto4/ui-vue: output, language, styling, layout, interaction level, sample data; used when planning discovery-phase mockups, never for the real build

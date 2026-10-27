@@ -2,6 +2,10 @@
 
 Living patterns and how-to guidance for building on the Pareto platform. The source of truth for conventions that evolve as real code teaches us better shapes. This vault is Pareto-specific.
 
+### What the vault does not cover
+
+Data platform work (Databricks, Data Factory, machine learning, Python) and integration-platform work have no standard of their own here. They choose the technologies that fit them (`default-stack`, `technology-choices`) and follow every document that holds for all workloads, such as naming, governance, security and compliance.
+
 ### What pp-core does with these documents
 
 pp-core reads this folder at various moments during discovery, and planning of a phase. It is then used to find the relevant content to reference for planning, finding standards, and passing it to the implementation phases.

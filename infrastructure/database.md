@@ -170,6 +170,7 @@ CREATE TABLE outbox (
     , event_type VARCHAR(100) NOT NULL
     , schema_version INT NOT NULL
     , payload NVARCHAR(MAX) NOT NULL
+    , trace_parent VARCHAR(55)
     , created_at DATETIMEOFFSET NOT NULL DEFAULT SYSUTCDATETIME()
     , published_at DATETIMEOFFSET
     , CONSTRAINT ck_outbox_schema_version_positive CHECK (schema_version > 0)
@@ -187,7 +188,7 @@ CREATE INDEX idx_outbox_unpublished
 - **A published row is marked with `published_at`, never deleted on publish.** A failed publish leaves it null, and the next drain picks it up. Ordering is by `created_at`, without aggregate-scoped sequence numbers, unless an app needs strict per-aggregate order that this does not deliver.
 - **The drain claims small batches** (`TOP (100)`, tunable per app) with `UPDLOCK, READPAST, ROWLOCK`, so concurrent drains skip each other's rows. Large batches invite lock escalation to a table lock, which defeats `READPAST`.
 - **A janitor removes published rows in chunks** (`DELETE TOP (5000)`, looped), after a retention period that is configurable per app. The default is 30 days and the floor is 7 days, never hard-coded.
-- **The outbox columns map to the event envelope** of `inter-service-communication`: `id` is `eventId`, `event_type` is `eventType`, `schema_version` is `schemaVersion`, `created_at` is `occurredAt`, `aggregate_type` and `aggregate_id` are `aggregateType` and `aggregateId`, and `payload` is `data`. `topic` is where the event is sent, and `schemaUri` is derived from the topic and the schema version when it is published.
+- **The outbox columns map to the event envelope** of `inter-service-communication`: `id` is `eventId`, `event_type` is `eventType`, `schema_version` is `schemaVersion`, `created_at` is `occurredAt`, `aggregate_type` and `aggregate_id` are `aggregateType` and `aggregateId`, and `payload` is `data`. `topic` is where the event is sent, `trace_parent` is sent as the message's `traceparent` property (`observability`), and `schemaUri` is derived from the topic and the schema version when it is published.
 - **Outbox columns are not renamed**, because the publisher maps them to the envelope by name. Adding a column is forward-compatible.
 
 ### Transactions and bulk operations

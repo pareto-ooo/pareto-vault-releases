@@ -21,7 +21,7 @@ Every repository uses this top-level folder layout, unless it is a brown-field p
 | Folder | Contains | Owned by |
 |--------|----------|----------|
 | `code/` | Main code and test projects: solutions, backend projects, frontend apps and their tests | Coding standards (C#, Vue.js) |
-| `docs/` | Project records: the project definition, decision records, data register, error catalog, dependency record, threat models, runbooks | Project records standard |
+| `docs/` | Project records: the project definition, architecture overview, decision records, data register, error catalog, dependency record, threat models, runbooks | Project records standard |
 | `infrastructure/` | All infrastructure as code. terragrunt/terraform | Terraform standards |
 | `pipeline/` | All pipeline assets: on Azure DevOps the entry points, `stages/`, `jobs/`, `steps/`, `scripts/`, `vars/`; on GitHub the `scripts/`, with workflows and actions under `.github/` where GitHub requires them | Azure DevOps or GitHub Actions standards |
 
