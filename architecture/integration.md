@@ -21,18 +21,18 @@ How we design integrations between systems. These are the ground truth rules for
 
 ### API exposure
 
-Azure API Management (APIM) is the direction for exposing our APIs. It is a direction, not yet an implemented platform: its cost at our target usage and its fit for our use cases are still being researched. Until it is in place, an API is exposed directly by its app, and the app itself handles authentication and rate limiting.
+Azure API Management (APIM) is not used by default. An API is exposed directly by its app, and the app handles authentication and rate limiting itself (`api`).
 
-- **One front door.** All APIs that are exposed outside their own application are published through API Management, so every Pareto API has one unified place for access, authentication and throttling.
-- **One instance, a workspace per project.** There is one shared API Management instance for the organisation. Each project publishes, versions and updates its own APIs in its own workspace, without depending on other teams.
-- **Public APIs through one shared product.** APIs for external partners and the public are exposed through a single, collectively maintained public workspace, released periodically as its own product. Internal APIs are not exposed publicly.
+- **Using API Management is an architecture decision,** taken by the project that needs it (for example for many external consumers, subscription keys, or a public contract that must stay stable while the internal API changes) and recorded as a decision record (`project-records`). The record states the instance, the products and how the project publishes its APIs.
 - **The external contract is decoupled from the internal API.** API Management maps the public contract to the internal API, so the internal API can change without breaking external consumers, and versions are managed at the front door.
-- **API Management handles the edge.** Authentication at the edge, subscription and key management, throttling, request and response translation, and network isolation (with or without a virtual network) are handled by API Management, not rebuilt in every app.
+- **API Management handles the edge.** Edge authentication, subscription and key management, throttling and request and response translation are handled there, not also in the app.
 - **The app still validates every token.** Authentication at the edge does not replace validation in the backend.
 
-### Integration platform and app integration
+### Integration platform
 
-TODO: integration platform, app integration.
+- **There is no shared integration platform.** Each project builds its own integrations, as calls to the other system's API or as messages (`inter-service-communication`).
+- **A client project uses the integration platform the client already has,** listed as a substitution (`project-records`).
+- **Adopting a dedicated integration service** (such as Logic Apps or Data Factory) is an architecture decision, recorded as a decision record (`project-records`).
 
 ## Decoupling
 

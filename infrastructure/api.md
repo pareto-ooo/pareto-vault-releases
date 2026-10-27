@@ -19,7 +19,7 @@ The rules for the HTTP APIs our services expose, for app-to-app integration and 
 - **Errors use one uniform shape** (problem+json with a stable `code` and `traceId`) and never contain stack traces, SQL, hostnames, secrets or personal data.
 - **Resource identifiers in public APIs are GUIDs.** Sequential or database-generated identifiers are never exposed, so resources cannot be enumerated.
 - **Request bodies bind to dedicated input types**, never directly to entities, so a client cannot set fields it should not (mass assignment). Responses are dedicated output types, never entities, so nothing leaks by accident.
-- **Rate limits apply per principal, and per address for anonymous endpoints.** The response is 429 with `Retry-After`. Expensive endpoints are limited tighter than cheap ones. Where the limit is enforced (API Management or the app) is described under Rate limits.
+- **Rate limits apply per principal, and per address for anonymous endpoints.** The response is 429 with `Retry-After`. Expensive endpoints are limited tighter than cheap ones. Where the limit is enforced (the app by default, or API Management) is described under Rate limits.
 - **Lists are paginated with a maximum page size**, so a single call cannot dump a table.
 - **State-changing operations that clients may retry are idempotent** (idempotency key), which also blocks replay.
 - **CORS is an explicit allow-list of origins.** Never a wildcard with credentials.
@@ -255,25 +255,23 @@ All list endpoints share one query-parameter style, with `camelCase` names.
 - **Token bucket is the default algorithm.** Capacity is the burst allowance, the refill rate is the steady-state limit, and a request consumes one token. Fixed or sliding windows are allowed alternatives.
 - **The limit is declared per operation** in the OpenAPI document with the `x-rate-limit` extension (`scope`, `limit`, `windowSeconds`) and a `429` response referencing the shared `RateLimited` response. The extension is informational and does not replace the actual configuration.
 
-### Behind Azure API Management
+### In the app (default)
 
-Azure API Management is the intended front door of our APIs. Rate limiting is enforced there, outside the app, and the app does not implement its own limiter.
-
-- **Limits are API Management policies**, configured per operation and per environment from the same values as the `x-rate-limit` declaration. They are not hardcoded.
-- **The policy follows the scopes of this chapter**: per principal for authenticated traffic, per address for anonymous endpoints, and global per endpoint for hot endpoints.
-- **The policy answers with the 429 contract above**, including the problem body.
-
-> **TODO: not modeled yet.** We do not publish through API Management today. The rules for creating, updating and publishing an API in API Management (policy definitions, products, subscriptions, how the OpenAPI document is imported) still need to be written, and belong in this chapter once that is in place.
-
-### Without API Management
-
-Until an API is published through API Management, assume callers reach the app directly. The app then enforces the limit itself.
+API Management is not used by default (`integration`), so callers reach the app directly and the app enforces the limit itself.
 
 - **Limits apply per principal, and per address for anonymous endpoints**, enforced in the app.
 - **The limiter uses shared state.** An in-memory limiter counts per instance, so the real limit becomes the limit times the instance count.
 - **Addresses come from the platform's forwarded headers**, validated against the known front end, never from a client-supplied header. A limit has no bypass header.
 - **Limits are configuration per app and environment**, never hardcoded.
-- **Adopting API Management removes this app-level limiter**, so the limit is not counted twice.
+
+### Behind Azure API Management
+
+A project that has decided to use API Management (`integration`) enforces the limit there, outside the app, and removes the app's own limiter, so the limit is not counted twice.
+
+- **Limits are API Management policies**, configured per operation and per environment from the same values as the `x-rate-limit` declaration. They are not hardcoded.
+- **The policy follows the scopes of this chapter**: per principal for authenticated traffic, per address for anonymous endpoints, and global per endpoint for hot endpoints.
+- **The policy answers with the 429 contract above**, including the problem body.
+- **How the project's APIs are created, updated and published** (policy definitions, products, subscriptions, how the OpenAPI document is imported) is part of its decision record.
 
 ## Internal endpoints
 

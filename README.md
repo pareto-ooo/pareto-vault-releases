@@ -12,7 +12,7 @@ pp-core reads this folder at various moments during discovery, and planning of a
 
 ## Ownership and cadence
 
-- **Owners:** **TODO:** name the vault owners.
+- **Owners:** the Pareto team.
 - **Reviewer:** the vault owners, on every pull request. The repository's GitHub plan has no branch protection, so this is agreed practice, not an enforced rule.
 - **Cadence:** as-needed. A vault PR is not gated by platform releases.
 
