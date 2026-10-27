@@ -33,6 +33,8 @@ The project definition is the single document that states what the project is an
 | Compliance frameworks that apply, and the controller or processor role per app | `compliance` | before design |
 | Highest data classification | `compliance` | before design |
 | Role holders and how to reach them: privacy owner, security owner, incident contact, architect who signs deviations, information security officer, IT director, enterprise architect. One person may hold several roles, and the record says so | `compliance`, `deviations` | before design, and before the first deviation |
+| Tenancy: single-tenant, or multi-tenant with how users belong to tenants | `security` | before design |
+| Error domain for problem `type` URIs | `api` | before the first error code appears in a response |
 | Workload profile | `sizing` | before any service tier is chosen |
 | Cost estimate per environment, and the performance test result for critical workloads | `sizing` | before the first deployment; the test result before go-live |
 | Promotion pattern (environment branches or tag promotion) | `release` | before the first pipeline |
@@ -74,7 +76,7 @@ Build starts when the project's requirement set answers each item below, or name
 |---|---|---|---|
 | Decision records | `docs/decisions/NNNN-<slug>.md`, one file per decision, numbered in order | a decision that changes architecture, a contract, a data store, a security or compliance boundary, or the cost; every deviation, with the content `deviations` requires | when the decision is made, before the work that depends on it is merged |
 | Data register | `docs/data-register.md` | every data store and flow with its classification, the personal data in it, purpose, retention and location, including copies such as caches and report tables | before the first store of personal data is deployed |
-| Error catalog | `docs/error-catalog.md`, until the platform catalog that `api` describes exists | what `api` requires of each error code | before the first error code appears in a response |
+| Error catalog | `docs/error-catalog.md` | what `api` requires of each error code | before the first error code appears in a response |
 | Dependency record | `docs/dependencies.md` | each direct package with what `compliance` requires of it | before the package is merged |
 | Threat models | `docs/threat-models/<feature>.md` | what `compliance` requires of a threat model | during planning of a feature that needs one |
 | Known weaknesses | `docs/known-weaknesses.md` | each finding not fixed immediately, with what `compliance` requires of it | when the finding is not fixed immediately |

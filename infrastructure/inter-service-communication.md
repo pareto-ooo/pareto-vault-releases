@@ -29,7 +29,23 @@ How apps talk to each other. Authentication, schema validation and idempotency a
 
 ## Events
 
-- **Events carry identifiers, not state.** The payload is the ids plus `eventId`, `schemaVersion` and `occurredAt`. Subscribers read current state from the owning app's API.
+- **Events carry identifiers, not state.** The `data` of an event holds only identifiers. Subscribers read current state from the owning app's API.
+- **Every event has the same envelope,** as the message body:
+
+  ```json
+  {
+    "eventId": "0b9f…",
+    "eventType": "OrderPlaced",
+    "schemaVersion": 1,
+    "schemaUri": "https://…/order-placed.v1.json",
+    "occurredAt": "2026-10-27T09:30:00Z",
+    "aggregateType": "Order",
+    "aggregateId": "4c1e…",
+    "data": { "orderId": "4c1e…", "customerId": "9a07…" }
+  }
+  ```
+
+  `eventId` is unique per event and is also the Service Bus message id, so subscribers and duplicate detection deduplicate on it. `occurredAt` is UTC. The outbox stores the envelope in columns (`database`).
 - **Every topic has a checked-in JSON Schema**, and the event references it (`schemaUri`).
 - **Breaking event changes go to a new topic version** (`<topic>.v2`), additive changes stay on the topic. A CI step blocks breaking changes to the original version.
 - **Service Bus access is RBAC** (Data Sender, Data Receiver) per managed identity. No connection strings.

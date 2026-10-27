@@ -153,14 +153,13 @@ Pick the status from what actually happened. Custom 4xx codes (450, 477) are not
 - **Clients match on `code` (or the `type` slug)**, never on `detail` or on `status` alone. `type`, `title`, `status` and `code` are stable across versions. `detail` is free text that may be reworded or localised.
 - **`code` is a `SCREAMING_SNAKE_CASE` identifier** (`CUSTOMER_NOT_FOUND`). Distinct error classes get distinct codes, and a code is never overloaded. A retired code is retired forever.
 - **`traceId` is the W3C trace-id** of the request, which Application Insights records as the operation ID.
-- **The `type` URI is `https://errors.pareto.example/<slug>`**, a placeholder domain that is reserved until a production error domain is confirmed. Per-app sub-namespacing (`https://errors.<app>.pareto.example/<slug>`) is allowed for a large catalog. Nothing user-facing ships against the placeholder.
-- **Every `code` and `type` is registered in the platform error catalog** (`docs/error-catalog.md` in the platform repo) before it appears in a response. The catalog holds the code, the type slug, the status, the title and a paragraph on what it means and how to recover. New error classes are added by pull request.
-- **Until the platform error catalog exists, each service keeps its own** `docs/error-catalog.md` in the same form. Its entries move to the platform catalog when that is created, unchanged, so no client sees a code change.
+- **The `type` URI is `https://<error domain>/<slug>`,** on an error domain the project records in its project definition (`project-records`). The same domain is used in every environment, so a `type` never changes between them. Nothing user-facing ships before the domain is recorded.
+- **Every `code` and `type` is registered in the service's error catalog** (`docs/error-catalog.md`) before it appears in a response. The catalog holds the code, the type slug, the status, the title and a paragraph on what it means and how to recover. New error classes are added by pull request.
 - **No bespoke error shapes.** Not per endpoint, not per service, and no free-form `error: "..."` body.
 - **The default 500 response carries a generic `detail`** (`An unexpected error occurred. Reference: <traceId>.`). The real cause is in the log, and the response never carries an internal path, a class name or the exception message verbatim.
 - **Expected failures say only roughly what was wrong with the input**: the field and the rule it broke (`validationErrors`), or the stable `title`. They never explain internals, existence of resources the caller may not know about, or why the system decided so, because an error body is an attack surface.
 - **Errors are never localised at the API.** `title` and `detail` are a stable contract, and localisation happens in the client, keyed by `code`.
-- **Use `Microsoft.AspNetCore.Mvc.ProblemDetails`** with the platform fields as extensions. A custom error DTO is not used.
+- **Use `Microsoft.AspNetCore.Mvc.ProblemDetails`** with `code` and `traceId` as extensions. A custom error DTO is not used.
 - **One exception handler chain per service**, registered in one place: a domain handler and a fallback handler (`IExceptionHandler`, `AddProblemDetails()`, `UseExceptionHandler()`). It maps directly. It does not catch and rethrow a wrapped exception.
 - **`code` and `type` per exception class come from one resolver**, sourced from the error catalog.
 - **401 and 403 never reach the exception handlers.** The authentication middleware short-circuits, so its challenge and forbid events (`JwtBearerEvents`) emit the same problem shape.
@@ -182,7 +181,7 @@ Pick the status from what actually happened. Custom 4xx codes (450, 477) are not
 
 ### Validation errors
 
-- **Model-state failures carry a `validationErrors` array**, produced by the single platform `InvalidModelStateResponseFactory`.
+- **Model-state failures carry a `validationErrors` array**, produced by one `InvalidModelStateResponseFactory` per service.
 - **Each entry has `field`, `code` and `message`.** `code` mirrors the validation attribute's class name without the `Attribute` suffix, for built-in and custom attributes alike (`EmailAddress`, `Required`, `StringLength`, `[PostalCode]` becomes `PostalCode`), `message` is the attribute's English message, and clients localise off `code`. `field` uses dotted paths for nested DTOs (`address.postalCode`).
 
 ## Filtering and sorting
@@ -294,7 +293,7 @@ Until an API is published through API Management, assume callers reach the app d
 - **The document is exported at build time** in the pipeline (`dotnet swagger tofile`), so consumers can generate clients without running the service.
 - **There is one document per major version**, at `/v<n>/openapi.json`. It shares types where the contract is shared and splits them where it diverges. Each is scoped with a `DocInclusionPredicate` on the path prefix.
 - **Every document contains**: `info.title` (`<App> API`), `info.version` (the major, which bumps together with the URL), `info.description` (one paragraph and a link to the platform docs), `servers` per environment from bound configuration, a document-level `security` scheme (Bearer JWT) that endpoints leave only when truly public, and `components.schemas` for the DTOs, the problem shape, the pagination envelope and the error codes.
-- **Shared schemas come from one platform NuGet package** (`Pareto.Platform.OpenApi`): `ProblemDetail`, `Page<T>`, the error envelope and the `traceId` and `code` extensions. The error and pagination shapes are identical in every document, and a change bumps the package. Until the package is published, a service defines these schemas once in its own API project, in the same shape, and replaces them with the package when it exists.
+- **The shared schemas are defined once per service,** in its API project: `ProblemDetail`, `Page<T>`, the error envelope and the `traceId` and `code` extensions. Their shape is the one this standard defines, so the error and pagination shapes are identical in every service's document.
 - **No anonymous inline schemas.** Every shape is a named DTO, so `$ref` resolves and generated clients get proper names.
 - **Doc comments are added only when they carry information**: a non-obvious behaviour (idempotency semantics, an async 202 handle), or a DTO field whose purpose is not obvious from its name. `[SwaggerOperation(Summary = "Get customer")]` on a method named `GetCustomer` is noise.
 - **Non-trivial shapes get an example**, attached with schema filters or example providers.
