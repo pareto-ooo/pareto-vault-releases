@@ -26,13 +26,13 @@
 - `infrastructure/inter-service-communication.md` — choosing HTTP vs Service Bus between apps: no call by default, queries vs facts, caller timeouts and fallback, ID-only versioned events, RBAC on topics; used when planning a cross-app call or event
 - `infrastructure/naming.md` — [cross-cutting] Azure resource naming convention: components, formats per resource type, security groups, restricted names, stable names; used when planning new Azure resources to decide how each is named
 - `infrastructure/sizing.md` — sizing and cost rules: workload profile, environment profiles, tiers, cold starts, cost estimate, performance test, post-go-live review; used when choosing service tiers or estimating Azure costs per environment
-- `infrastructure/terraform.md` — Terraform and Terragrunt rules: folder structure, units, configuration levels, modules, remote state, deletion protection, versions, applying; used when planning or writing infrastructure code
+- `infrastructure/terraform.md` — Terraform and Terragrunt rules: folder layout, units, configuration levels, access unit for role assignments, modules, remote state, deletion protection, applying; used when planning or writing infrastructure code
 
 ## pipeline
 - `pipeline/azure-devops.md` — Azure DevOps pipeline rules: folder layout, stages, jobs, steps, scripts, variables, environments, migrations and security; used when planning or writing pipeline YAML, templates or scripts
-- `pipeline/github-actions.md` — GitHub Actions rules: layout, entry points, reusable workflows, scripts, OIDC and permissions, environment branches or tag promotion, migrations, security; used when planning or writing GitHub Actions workflows
+- `pipeline/github-actions.md` — GitHub Actions rules: layout, entry points, reusable workflows, scripts, OIDC and permissions, environments and promotion mechanics, migrations, security; used when planning or writing GitHub Actions workflows
 - `pipeline/quality-gates.md` — merge-blocking PR gates: build and tests, SonarCloud, GHAS and Trivy, substitutes without them, ZAP, thresholds, hotfix exceptions; used when deciding which pipeline checks must pass before merge
-- `pipeline/release.md` — release stages and gates: one stage per approval, state checks before non-repeatable steps like slot swaps, performance test before critical go-lives; used when planning deploy, approval or release-strategy changes
+- `pipeline/release.md` — promotion (tag or environment branches, never a rebuild), one stage per approval, state checks before slot swaps, performance test before critical go-lives; used when planning deploy, promotion or release changes
 
 ## security
 - `security/compliance.md` — GDPR, ISO 27001, Microsoft first, regions, backups, classification levels, one-person teams, audit trail, threat models, evidence; used when planning personal data, dependencies, trust boundaries, backups or audits

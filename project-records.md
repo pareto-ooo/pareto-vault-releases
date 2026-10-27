@@ -35,7 +35,7 @@ The project definition is the single document that states what the project is an
 | Role holders and how to reach them: privacy owner, security owner, incident contact, architect who signs deviations, information security officer, IT director, enterprise architect. One person may hold several roles, and the record says so | `compliance`, `deviations` | before design, and before the first deviation |
 | Workload profile | `sizing` | before any service tier is chosen |
 | Cost estimate per environment, and the performance test result for critical workloads | `sizing` | before the first deployment; the test result before go-live |
-| Promotion pattern (environment branches or tag promotion) | `github-actions` | before the first pipeline |
+| Promotion pattern (environment branches or tag promotion) | `release` | before the first pipeline |
 | Quality-gate substitutes and the reason | `quality-gates` | when a substitute is used |
 
 ### Organisation substitutions

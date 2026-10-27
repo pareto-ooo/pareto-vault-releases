@@ -62,7 +62,8 @@ pipeline/
 - **One entry point per purpose.** The table shows the common set. A repository may have more entry points, for example a separate CD pipeline per deployable with its own release cadence.
   | Entry point | Purpose |
   |-------------|---------|
-  | `cd.yaml` | Build and deploy on a push to an environment branch |
+  | `cd.yaml` | Build and deploy on a push to an environment branch, or on a push to `main` with tag promotion |
+  | `release.yaml` | With tag promotion: build a release tag once and promote that artifact through the later environments |
   | `pull-request.yaml` | Validation of a pull request before merge, or one `<deployable>-pull-request.yaml` per part when validation is split by path |
   | `dependabot.yaml` | Scheduled run that opens pull requests for dependency and tool version updates |
 - **Entry points orchestrate, they do not implement.** They define triggers, stages, variables and which job templates run. Steps and scripts are never inlined in an entry point.
@@ -121,7 +122,7 @@ pipeline/
 `pipeline/vars/` contains shared variable templates.
 
 - **Organised by scope.** `global.yaml` holds variables shared across all environments, `environment.yaml` selects the environment-specific values.
-- **`environment.yaml` selects a variable group per environment branch.** Environment-specific values live in the variable group, not in the YAML file.
+- **`environment.yaml` selects a variable group per environment,** by branch with environment branches, or by the stage's environment parameter with tag promotion. Environment-specific values live in the variable group, not in the YAML file.
 - **Plain variables in `environment.yaml` only for compile-time values.** Values that must be known before the run starts, such as the service connection and the Azure DevOps environment name, may be plain variables, because variable group values are only resolved at runtime.
 - **Secrets are stored in Azure Key Vault.** A pipeline reads them from Key Vault, directly or through a variable group linked to Key Vault, never from a plain variable.
 - **Variable groups hold non-secret configuration.** Environment-specific settings that are not secret may live as plain values in a variable group.
@@ -129,10 +130,12 @@ pipeline/
 
 ## Environments and branches
 
-- **One branch per environment.** A push to an environment branch deploys that environment. The branch names and the number of environments are decided per project.
-- **The branch-to-environment mapping lives in one place**, in `vars/environment.yaml`, not scattered over jobs and steps. Branch names may otherwise only appear in entry point triggers and tool configuration, which cannot use variables.
-- **Environment branches are protected.** They only change through a pull request, never by a direct push.
-- **Production is gated.** The production environment has a manual approval check, and both the environment and its service connection have a branch control check for the production branch.
+- **A project uses one of the two promotion patterns of `release`:** environment branches or tag promotion. The branch names and the number of environments are decided per project.
+- **With tag promotion, `release.yaml` builds once** on a release tag and deploys the artifact to each later environment in its own deploy stage.
+- **With environment branches, a later environment's deploy stage builds nothing.** It reads the image running in the previous environment, checks it as `release` requires, and downloads the migration artifact from the build run named in the image's labels (the Download Pipeline Artifact task with that run's id).
+- **The trigger-to-environment mapping lives in one place**, in `vars/environment.yaml`, not scattered over jobs and steps. Branch and tag names may otherwise only appear in entry point triggers and tool configuration, which cannot use variables.
+- **Environment branches and release tags are protected.** An environment branch only changes through a pull request, never by a direct push. A release tag is created only by the people allowed to release, and repository permissions stop anyone from moving or deleting it.
+- **Production is gated.** The production environment has a manual approval check, and both the environment and its service connection have a branch control check that admits only the production branch, or with tag promotion only release tags (`refs/tags/v*`).
 - **Deployments to an environment run one at a time.** The environment has an exclusive lock, so two runs never deploy to it at the same time.
 
 ## Tool configuration

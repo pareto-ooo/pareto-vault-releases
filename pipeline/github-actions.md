@@ -124,9 +124,9 @@ Reusable workflows (`on: workflow_call`) take the place of stage and job templat
 
 ## Environments and branches
 
-- **A project uses one of two promotion patterns**, environment branches or tag promotion, and records which one in its project definition. Both are standard; neither is a deviation.
-- **Environment branches: one branch per environment.** A push to an environment branch deploys that environment. The branch names and the number of environments are decided per project.
-- **Tag promotion: build once, promote the tag.** A push to `main` deploys the first environment. A release tag on `main` (`v1.4.0`) starts one run that builds once and publishes the artifact, and that same artifact is deployed to each later environment in order (`acc`, then `prd`), each in its own environment-bound job. Nothing is rebuilt between environments.
+- **A project uses one of the two promotion patterns of `release`:** environment branches or tag promotion. The branch names and the number of environments are decided per project.
+- **With tag promotion, `release.yaml` builds once** and deploys the artifact to each later environment in its own environment-bound job.
+- **With environment branches, a later environment's deploy job builds nothing.** It reads the image running in the previous environment, checks it as `release` requires, and downloads the migration artifact from the build run named in the image's labels (`actions/download-artifact` with `run-id`).
 - **The trigger-to-environment mapping lives in one place**, in the entry point's trigger and its `environment` selection, not scattered over jobs and steps.
 - **Environment branches and release tags are protected by rulesets.** An environment branch only changes through a pull request, never by a direct push. A release tag is created only by the people allowed to release, and is never moved or deleted.
 - **Production is gated.** The production environment has required reviewers and a deployment policy that only admits the production branch, or with tag promotion only release tags.

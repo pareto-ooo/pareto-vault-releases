@@ -112,11 +112,11 @@ Rules that only hold on our Microsoft Azure platform. The general rules in the o
 
 ### Roles and access (RBAC)
 
-- **(ISO27001) One runtime identity per app per environment**, a user-assigned managed identity, distinct from the single pipeline identity and from any background-work identity. Distinct identities give distinct audit trails, revocation and blast radius.
-- **(ISO27001) Role assignments are scoped to the specific resource**, never the resource group or subscription, and use built-in roles. Broad scopes are for organisation-level roles and the bootstrap identity only.
-- **(ISO27001) Role assignments are declared in Terraform** and executed by the delegated admins through the batched change request. No ad-hoc grants in the Portal.
+- **(ISO27001) One runtime identity per app per environment**, a user-assigned managed identity, distinct from the pipeline's deploy and access identities and from any background-work identity. Distinct identities give distinct audit trails, revocation and blast radius.
+- **(ISO27001) Role assignments are scoped to the specific resource**, never the resource group or subscription, and use built-in roles. Broad scopes are for organisation-level roles and the bootstrap and access identities only.
+- **(ISO27001) Role assignments are declared in Terraform,** in the environment's access unit, and applied by the access stage once a delegated admin approves it (`terraform`). That approval is the batched change request. No ad-hoc grants in the Portal.
 - **(ISO27001) `Owner` and subscription-level `Contributor` are never granted** to workload identities. A developer account never gets rights to act as a production identity, outside break-glass.
-- **(ISO27001) Authentication to Azure from pipelines is keyless** through workload identity federation. No service principal secrets and no personal access tokens. Pipeline identities cannot create role assignments.
+- **(ISO27001) Authentication to Azure from pipelines is keyless** through workload identity federation. No service principal secrets and no personal access tokens. The deploy identity cannot create role assignments; only the access identity can (`terraform`).
 - **A service principal is the exception.** It is used only where a service supports neither managed identity nor federation. It is scoped to the one resource, and uses a certificate credential.
 - **Roles are assignable to groups.** Roles scoped to the specific resource, can be assigned to a group for easy management of multiple individuals that need the same role.
 

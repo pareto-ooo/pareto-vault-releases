@@ -49,7 +49,7 @@ How users and services prove who they are to an application on the default stack
 
 - **A calling service uses its user-assigned managed identity** to request a token for the receiving API's application ID URI. It never forwards a user's token and never uses a shared secret.
 - **The receiving API defines an application role for each kind of access it allows** (`Orders.Read.All`), and that role is assigned to each allowed caller's managed identity. That assignment is the explicit allow-list `security` requires: a caller without the role is rejected.
-- **The role assignments to managed identities are declared in infrastructure code,** next to the identities themselves.
+- **The role assignments to managed identities are declared in the environment's access unit** with its other role assignments (`terraform`).
 
 ## Local development
 

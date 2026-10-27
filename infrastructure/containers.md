@@ -35,6 +35,7 @@ How deployable applications are packaged as container images, stored and promote
 
 - **Images are stored in Azure Container Registry:** one registry for non-production and one for production, each in its own subscription. Admin user and anonymous pull are disabled; pushes and pulls use Entra identities.
 - **Images are tagged with the commit identifier,** never `latest`, and deployed by digest.
+- **Every image is labelled with its commit, its source tree and its build run:** `org.opencontainers.image.revision` for the commit, and the tree hash and run identifier as labels of their own. A later deploy uses them to check what it promotes and to find the run's other artifacts (`release`).
 - **The image is scanned before every deploy** (`quality-gates`), and the exact image that passed in acceptance is the one promoted to production.
 - **Promotion to production imports the image by digest** from the non-production registry into the production registry. It is never rebuilt.
 - **Old images are purged by a retention policy,** keeping at least every image that is deployed in any environment and the one before it, so a release can be rolled back.

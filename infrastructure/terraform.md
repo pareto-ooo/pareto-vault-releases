@@ -88,6 +88,13 @@ Configuration has three levels, and only three.
 - **`dependencies` only for order without values.** When a unit must run after another but needs none of its outputs, it uses a `dependencies` block instead of a `dependency` block.
 - **Run the whole environment through Terragrunt.** Plan and apply run with `run --all`, so the dependency order is always respected.
 
+## Access
+
+- **Role assignments live in one `access` unit per environment.** It holds every role assignment of the environment's workloads: Azure role assignments, and the app-role assignments of managed identities (`authentication`). It takes the identities and resources from the other units' outputs. No other unit creates a role assignment.
+- **The access unit is applied by its own stage, with its own identity.** The access identity is the only pipeline identity that can create role assignments; the deploy identity, which runs every other stage, cannot. It holds User Access Administrator on the environment's workload resource groups, with a condition that limits it to the built-in roles the workloads use, and, where app roles are assigned, the Microsoft Graph permission `AppRoleAssignment.ReadWrite.All` with admin consent from the identity team (`security`).
+- **A delegated admin approves the access stage.** Its plan is published like any plan, and the access stage runs in its own environment (an Azure DevOps environment and service connection, or a GitHub environment with its own federated credential) whose only approvers are the delegated admins. That approval is the batched change request `security` requires.
+- **The main run leaves the access unit out** (`--queue-exclude-dir`), and the access stage runs only that unit, after the units that create the identities and before the deploy that needs the access.
+
 ## Modules
 
 `infrastructure/modules/` contains reusable Terraform modules.
@@ -111,7 +118,7 @@ Configuration has three levels, and only three.
 - **State accounts are locked down.** Public blob access disabled, HTTPS only and TLS 1.2 minimum on every state account.
 - **State accounts are named `st<app>tf<company><env>`.** This follows the storage account format of the naming convention (`naming`), with `tf` marking the account as Terraform state, so every app repo derives the same kind of name.
 - **State access uses Entra ID.** OIDC and Azure AD auth for the backend; shared-key access is disabled on state accounts.
-- **Role assignments are requested, not applied.** The bootstrap script prints the role assignments the pipeline identity needs; a delegated admin applies them.
+- **The pipeline's own role assignments are requested, not applied.** The bootstrap script prints the role assignments the pipeline identity and the access identity need; a delegated admin applies them.
 
 ## Deletion protection
 
