@@ -633,9 +633,9 @@ The rules below are enforced by lint or the compiler. Every other rule in this d
 - **Screens meet WCAG 2.2 level AA when a law requires it:** the European Accessibility Act for the products and services it covers, or the accessibility rules for public-sector bodies. The project definition records whether one applies (`project-records`). Where one does, the application is audited against WCAG 2.2 AA before go-live, every new screen gets a manual keyboard and screen-reader check, and the accessibility statement the law requires is published.
 - **Otherwise the rules below are the minimum** every screen meets. They hold in both cases.
 
-
 - **Every input has a label** (the kit's `label` prop), and every icon-only button a `title` or `aria-label`.
 - **Everything works with a keyboard.** Hover-only actions are banned.
+- **Tap targets are at least 24 by 24 CSS pixels** (WCAG 2.2 AA), or have that much space around them, and 44 by 44 on screens used mainly on touch devices. The kit's components meet this. A custom interactive element is checked in the browser, by the design review or a Playwright test, never by reading computed styles in a component test.
 - **Each screen has an axe check** in its component test (`vitest-axe`). vitest-axe does not work under happy-dom, so a screen's spec file starts with `// @vitest-environment jsdom`.
 - **axe in a simulated DOM does not check color contrast.** Contrast is covered by the design system's tokens.
 
@@ -652,6 +652,7 @@ The rules below are enforced by lint or the compiler. Every other rule in this d
 
 - **Stores, composables and API clients follow the full testing rules.** They are the frontend's application and adapter code.
 - **Components are tested on their contract.** Props and store state in, rendered output and emitted events out. Never assert on `wrapper.vm` or internal state.
+- **No assertions on looks.** A test never checks colours, underlines, CSS classes chosen for appearance, computed styles or sizes. UI tests check the contract with the application and nothing the requirements do not ask for (`coding-standards-all-languages`). Visual details are covered by the design system's tokens, accessibility by the axe check, and target size as Accessibility describes. A UI review finding about looks is fixed in the CSS, without a test that pins it.
 - **Tests live in `tests/`, mirroring `src/`**, as `<name>.spec.ts` (`tests/features/customer/components/CustomerCard.spec.ts`). `src/` holds production code only.
 - **Naming.** `describe` names the component or function, a nested `describe` the method or interaction, and `it` the state and expected behavior. Together they read as `MethodName_StateUnderTest_ExpectedBehavior`.
 - **`mount`, not `shallowMount`.** Child components stay real.
