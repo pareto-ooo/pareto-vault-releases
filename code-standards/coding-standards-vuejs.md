@@ -535,7 +535,8 @@ These rules apply once the app uses Pinia.
 The defaults for how screens are laid out and how they talk to the user. A project that needs something else records the decision.
 
 - **Desktop first, never broken on a phone.** The primary target is an office laptop in a current Edge or Chrome. Layouts reflow to one column on narrow screens at Tailwind's default breakpoints, so nothing breaks on a phone. A phone-specific design is a project decision, and so are custom breakpoints.
-- **The app shell is `UiAppShell` with `UiSidebar` as the only main navigation.** Items are grouped with the sidebar's `group` eyebrows, and the signed-in user and sign-out sit in its footer. There is no second navigation bar.
+- **The app shell is `UiAppShell` with `UiSidebar` as the only main navigation.** Each main section is a sidebar parent item whose screens are its `children`; the user expands and collapses it, and the section holding the current screen opens by itself. The signed-in user and sign-out sit in its footer. There is no second navigation bar.
+- **The sidebar shows only what the user may use.** A main section appears only when the user's rights allow at least one screen under it, and it lists only those screens. Nothing is shown disabled.
 - **Navigation is at most two levels deep.** A detail screen has a back link to its list, and the list restores its filters from the URL.
 - **No product tour and no help page by default.** Empty states guide first use.
 - **An empty state is one sentence and the one action that resolves it**, shown with `UiEmptyState`: "No customers yet" with New customer, "No customers match these filters" with Clear filters. A list that is empty and a list emptied by its filters are different states with different actions.
