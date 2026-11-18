@@ -1,4 +1,5 @@
 ## architecture
+- `architecture/ai-features.md` — model calls and agents in our apps: adapter, pinned model, agent tools and rights, confirming outward actions, output validation, limits, logging, evaluation; used when planning a feature that calls a model
 - `architecture/business-capabilities.md` — how projects use the Business Capability Model: record impacted capabilities, reference BCM names, raise change requests, capability naming; used when defining a project's scope or proposing a capability
 - `architecture/default-stack.md` — default stack for custom-built apps: Vue on @pareto4/ui-vue, C#/.NET on App Service, hosted services, Azure SQL or Cosmos DB, Service Bus, Application Insights; used when starting or analysing an application
 - `architecture/deviations.md` — [cross-cutting] how to deviate from a principle or standard: record it, who signs off, security approvers, which deviations block the affected work; used when any choice goes against the vault
@@ -21,6 +22,7 @@
 ## infrastructure
 - `infrastructure/api.md` — HTTP API rules: auth per operation, DTOs, routes and versioning, enum names, problem+json errors, paging, idempotency, rate limits, operator endpoints, OpenAPI; used when planning or reviewing HTTP endpoints
 - `infrastructure/app-service.md` — apps on App Service for Linux: plan per app per environment, image pull, staging slot and swap, health check, Always On, singleton work, settings, hardening; used when planning App Service resources or releases
+- `infrastructure/background-jobs.md` — deferred work in one app: job table and status, claiming, saved steps and resumption, retries, cancellation, status resource, retention; used when planning work that outlives its request
 - `infrastructure/containers.md` — container images: one per deployable, multi-stage, minimal pinned base, non-root, commit tags, scanned, registries per subscription, promotion by digest; used when planning Dockerfiles, images or registries
 - `infrastructure/database.md` — language-neutral database rules: one database per app, GUIDv4 ids (v7 for large tables), keyset paging, audit columns, concurrency, outbox, migrations, Cosmos DB; used when planning schema or persistence work
 - `infrastructure/governance.md` — cloud governance as infrastructure rules: tenants and subscriptions, tags, identity, network, data protection, logging, backup, cost; used when planning any Azure resource or landing-zone change
